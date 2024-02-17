@@ -1,16 +1,17 @@
 add_library(flang
-    flang/token.cpp
+        flang/token.cpp
+        flang/tokenizer.cpp
 )
 
 target_include_directories(
-    flang
-    SYSTEM
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        flang
+        SYSTEM
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 )
 
 target_compile_options(flang
-    PRIVATE
+        PRIVATE
         $<$<CONFIG:DEBUG>:-O0 -g>
         $<$<CONFIG:RELEASE>:-O3>
 )

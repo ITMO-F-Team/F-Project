@@ -1,6 +1,8 @@
 BasedOnStyle: google
 DerivePointerAlignment: false
-IncludeBlocks: Preserve
+PointerAlignment: Left
+IncludeBlocks: Regroup
+NamespaceIndentation: Inner
 SeparateDefinitionBlocks: Always
 ColumnLimit: 120
 Standard: Latest
