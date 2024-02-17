@@ -2,12 +2,15 @@
 
 #include <string>
 
+#include "token_type.hpp"
+
 namespace flang {
 class Token {
  public:
-  explicit Token(std::string value);
+  Token(TokenType type, std::string value);
 
  private:
+  TokenType type_;
   std::string value_;
 };
 }  // namespace flang

@@ -1,5 +1,5 @@
 #include "flang/token.hpp"
 
 namespace flang {
-Token::Token(std::string value) : value_(std::move(value)) {}
+Token::Token(TokenType type, std::string value) : type_(type), value_(std::move(value)) {}
 }  // namespace flang

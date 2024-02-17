@@ -8,6 +8,8 @@
 namespace flang {
 class Tokenizer {
  public:
-  std::vector<Token> tokenize(std::string_view source);
+  std::vector<Token> tokenize(std::string_view source) const;
+
+ private:
 };
 }  // namespace flang
