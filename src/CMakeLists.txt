@@ -15,3 +15,6 @@ target_compile_options(flang
         $<$<CONFIG:DEBUG>:-O0 -g>
         $<$<CONFIG:RELEASE>:-O3>
 )
+
+add_executable(flang-interpreter
+        main.cpp)
