@@ -1,0 +1,6 @@
+(assert
+    (
+        (lambda (x) ((return x))) 42
+    )
+    42
+)

@@ -1,0 +1,7 @@
+(setq prev 0)
+(setq cur 1)
+
+(while (less cur 10)
+    ((assert (equal (plus prev 1) cur))
+     (setq prev cur)
+     (setq cur (plus cur 1))))

@@ -1,0 +1,7 @@
+(cond (and (equal 2 2) (less 3 10))
+    (assert true)
+    (assert false))
+
+(cond (equal 2 3)
+    (assert false)
+    (assert true))
