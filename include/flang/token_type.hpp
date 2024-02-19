@@ -14,6 +14,8 @@ enum TokenType {
   tkCOND,
   tkWHILE,
   tkRETURN,
-  tkBREAK
+  tkBREAK,
+  tkNULL,
+  tkIDENTIFIER
 };
 }
