@@ -1,7 +1,7 @@
 #pragma once
 
 #include <regex>
-#include <string_view>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -10,13 +10,13 @@
 namespace flang {
 class Tokenizer {
  public:
-  std::vector<Token> tokenize(std::string_view source) const;
+  std::vector<Token> tokenize(std::string const& source) const;
 
  private:
   // clang-format off
-  const std::unordered_map<TokenType, std::regex> token_to_regex = {
-      {tkLPAREN, std::regex("(")},
-      {tkRPAREN, std::regex(")")},
+  const std::unordered_map<TokenType, std::regex> token_to_regex_ = {
+      {tkLPAREN, std::regex("\\(")},
+      {tkRPAREN, std::regex("\\)")},
       {tkQUOTE, std::regex("quote")},
       {tkSETQ, std::regex("setq")},
       {tkFUNC, std::regex("func")},
@@ -26,8 +26,9 @@ class Tokenizer {
       {tkWHILE, std::regex("while")},
       {tkRETURN, std::regex("return")},
       {tkBREAK, std::regex("break")},
-      {tkNULL, std::regex("null")},
-      {tkIDENTIFIER, std::regex(R"(\b[a-zA-Z][a-zA-Z0-9]*\b)")}
+      {tkIDENTIFIER, std::regex("[a-zA-Z][a-zA-Z0-9]*")},
+      {tkINTEGER, std::regex("[+-]?\\d+")},
+      {tkREAL, std::regex("[+-]?\\d+\\.\\d+")}
   };
   // clang-format on
 };
