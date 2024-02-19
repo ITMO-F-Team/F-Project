@@ -1,0 +1,45 @@
+; Returns reversed list
+
+(func length (list)
+  (cond (isnull list)
+    0
+    (plus 1 (length (tail list)))
+  )
+)
+
+(func append (list element)
+  (cond (isnull list)
+    '(element)
+    (cons (head list) (append (tail head) element))
+  )
+)
+
+(func reverse (list)
+  (cond (lesseq (length list) 0)
+    '()
+    (cond (equals (length list) 1)
+      '(head list)
+      (append (reverse (tail list)) (head list))
+    )
+  )
+)
+
+(func comapreLists (firstList, secondList)
+  (cond (and (isnull firstList) (isnull secondList))
+    true
+    (cond (or (isnull firstList) (isnull secondList))
+      false
+      (cond (nonequal (head firstList) (head secondList))
+        false
+        (compareLists (tail firstList) (tail secondList))
+      )
+    )
+  )
+)
+
+
+(assert (equal (compareLists '() (reverse '())) true))
+(assert (equal (compareLists '(1) (reverse '(1))) true))
+(assert (equal (compareLists '(1 2) (reverse '(2 1))) true))
+(assert (equal (compareLists '(1 2 3) (reverse '(3 2 1))) true))
+(assert (equal (compareLists '(1 2 3 4 5) (reverse '(5 4 3 2 1))) true))
