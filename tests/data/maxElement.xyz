@@ -1,0 +1,25 @@
+; Returns the maximum element from a list
+
+(func maxElement (lst)
+  (cond (or (not (islist lst)) (isnull lst))
+    null
+    (setq maxRest (maxElement (tail lst))
+      (cond (or (isnull maxRest) (greatereq (head lst) maxRest))
+        (head lst)
+        maxRest
+      )
+    )
+  )
+)
+
+
+; =========
+; Testcases
+; =========
+
+(equal (max_element '()) null)          ; true
+(equal (max_element '(1)) 1)            ; true
+(equal (max_element '(1 2 3 4 5)) 5)    ; true
+(equal (max_element '(1 2 5 3 4)) 5)    ; true
+(equal (max_element '(5 1 2 3 4)) 5)    ; true
+

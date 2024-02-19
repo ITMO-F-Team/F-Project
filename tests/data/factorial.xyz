@@ -1,0 +1,18 @@
+; Returns factorial value of number `n`: n!
+
+(func factorial (n)
+  (cond (lesseq n 1)
+    1
+    (multiply (factorial (minus n 1)) n)
+  )
+)
+
+
+; =========
+; Testcases
+; =========
+
+(equal (factorial 0) 1)         ; true
+(equal (factorial 1) 1)         ; true
+(equal (factorial 10) 3628800)  ; true
+

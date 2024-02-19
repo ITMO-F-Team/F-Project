@@ -1,0 +1,22 @@
+; Returns the n-th number of the Fibonacci sequence
+
+(func fibonacci (n)
+  (cond (equal n 0)
+        0
+        (cond (equal n 1)
+          1
+          (plus (fibonacci (minus n 2)) (fibonacci (minus n 1)))
+        )
+  )
+)
+
+
+; =========
+; Testcases
+; =========
+
+(equal (fibonacci 0) 0)     ; true
+(equal (fibonacci 1) 1)     ; true
+(equal (fibonacci 2) 1)     ; true
+(equal (fibonacci 10) 55)   ; true
+
