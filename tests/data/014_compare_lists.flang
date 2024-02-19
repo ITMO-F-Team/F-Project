@@ -1,0 +1,22 @@
+; Returns `true` if two lists are equal else returns `false`
+
+(func comapreLists (firstList, secondList)
+  (cond (and (isnull firstList) (isnull secondList))
+    true
+    (cond (or (isnull firstList) (isnull secondList))
+      false
+      (cond (nonequal (head firstList) (head secondList))
+        false
+        (compareLists (tail firstList) (tail secondList))
+      )
+    )
+  )
+)
+
+
+(assert (equal (compareLists '(1 2 3 4) '(1 2 3 4)) true))
+(assert (equal (compareLists '() '()) true))
+(assert (equal (compareLists '(1 2 3) '()) false))
+(assert (equal (compareLists '() '(1 2 3)) false))
+(assert (equal (compareLists '(1 2) '(1 2 3)) false))
+(assert (equal (compareLists '(3 1 2) '(1 2 3)) false))
