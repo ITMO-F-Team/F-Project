@@ -1,6 +1,6 @@
 #include "flang/tokenizer.hpp"
 
-#include <stdexcept>
+#include "flang/flang_exception.hpp"
 
 namespace flang {
 std::vector<Token> Tokenizer::tokenize(std::string const& source) const {
@@ -8,7 +8,7 @@ std::vector<Token> Tokenizer::tokenize(std::string const& source) const {
 
   auto from_it = source.begin();
   while (from_it != source.end()) {
-    if (*from_it == ' ') {
+    if (std::isspace(*from_it)) {
       ++from_it;
       continue;
     }
@@ -21,8 +21,7 @@ std::vector<Token> Tokenizer::tokenize(std::string const& source) const {
       }
     }
     if (match.empty()) {
-      // TODO: Descriptive error msg
-      throw std::runtime_error("Unexpected symbol met");
+      throw tokenizer_exception("Unexpected symbol met: " + std::string(1, *from_it));
     }
   }
   return tokenized_source;

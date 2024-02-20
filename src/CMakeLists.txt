@@ -1,6 +1,7 @@
 add_library(flang
         flang/token.cpp
         flang/tokenizer.cpp
+        flang/pp/print_token.cpp
 )
 
 target_include_directories(
