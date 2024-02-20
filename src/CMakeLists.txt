@@ -12,8 +12,9 @@ target_include_directories(
 )
 
 target_compile_options(flang
+        INTERFACE
+        $<$<CONFIG:DEBUG>:-Wall -Werror -Wextra-semi -O1 -g>
         PRIVATE
-        $<$<CONFIG:DEBUG>:-O0 -g>
         $<$<CONFIG:RELEASE>:-O3>
 )
 
