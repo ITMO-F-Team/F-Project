@@ -1,6 +1,6 @@
 ; Returns `true` if two lists are equal else returns `false`
 
-(func comapreLists (firstList, secondList)
+(func comapreLists (firstList secondList)
   (cond (and (isnull firstList) (isnull secondList))
     true
     (cond (or (isnull firstList) (isnull secondList))
