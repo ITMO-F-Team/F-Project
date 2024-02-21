@@ -1,6 +1,7 @@
 add_library(flang
         flang/token.cpp
         flang/tokenizer.cpp
+        flang/pp/print_token.cpp
 )
 
 target_include_directories(
@@ -11,10 +12,13 @@ target_include_directories(
 )
 
 target_compile_options(flang
+        INTERFACE
+        $<$<CONFIG:DEBUG>:-Wall -Werror -Wextra-semi -O1 -g>
         PRIVATE
-        $<$<CONFIG:DEBUG>:-O0 -g>
         $<$<CONFIG:RELEASE>:-O3>
 )
 
 add_executable(flang-interpreter
         main.cpp)
+
+target_link_libraries(flang-interpreter PRIVATE flang)

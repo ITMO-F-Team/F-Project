@@ -2,8 +2,6 @@
 
 namespace flang {
 enum TokenType {
-  tkINTEGER,
-  tkREAL,
   tkLPAREN,
   tkRPAREN,
   tkQUOTE,
@@ -14,6 +12,10 @@ enum TokenType {
   tkCOND,
   tkWHILE,
   tkRETURN,
-  tkBREAK
+  tkBREAK,
+  tkIDENTIFIER,
+  tkINTEGER,
+  tkREAL,
+  // tkNULL // TODO: Add null as token (?)
 };
 }

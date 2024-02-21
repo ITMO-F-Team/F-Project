@@ -6,3 +6,4 @@ NamespaceIndentation: Inner
 SeparateDefinitionBlocks: Always
 ColumnLimit: 120
 Standard: Latest
+InsertNewlineAtEOF: true
