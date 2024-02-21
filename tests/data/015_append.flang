@@ -5,7 +5,7 @@
   )
 )
 
-(func comapreLists (firstList, secondList)
+(func comapreLists (firstList secondList)
   (cond (and (isnull firstList) (isnull secondList))
     true
     (cond (or (isnull firstList) (isnull secondList))
