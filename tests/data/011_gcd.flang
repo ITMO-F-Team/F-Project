@@ -1,5 +1,3 @@
-; Returns GCD (greatest common divisor) of values `a` and `b`
-
 (func mod (dividend divisor)
   (cond (less dividend divisor)
     dividend

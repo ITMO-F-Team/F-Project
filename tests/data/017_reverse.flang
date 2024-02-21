@@ -1,5 +1,3 @@
-; Returns reversed list
-
 (func length (list)
   (cond (isnull list)
     0
