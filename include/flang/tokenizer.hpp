@@ -17,7 +17,7 @@ class Tokenizer {
   const std::unordered_map<TokenType, std::regex> token_to_regex_ = {
       {tkLPAREN, std::regex("\\(")},
       {tkRPAREN, std::regex("\\)")},
-      {tkQUOTE, std::regex("quote")},
+      {tkQUOTE, std::regex("quote|'")},
       {tkSETQ, std::regex("setq")},
       {tkFUNC, std::regex("func")},
       {tkLAMBDA, std::regex("lambda")},
