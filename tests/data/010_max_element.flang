@@ -1,4 +1,4 @@
-func maxElement (lst)
+(func maxElement (lst)
   (cond (or (not (islist lst)) (isnull lst))
     null
     (setq maxRest (maxElement (tail lst))
