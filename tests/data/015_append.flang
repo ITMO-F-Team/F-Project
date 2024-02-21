@@ -3,7 +3,7 @@
 (func append (list element)
   (cond (isnull list)
     '(element)
-    (cons (head list) (append (tail head) element))
+    (cons (head list) (append (tail list) element))
   )
 )
 
