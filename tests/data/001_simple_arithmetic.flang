@@ -1,12 +1,9 @@
-; Simplest arithmetic expressions
 (assert (equal (times 5 10) 50))
 (assert (equal (plus 5 5) (times 2 5)))
 
-; Simplest comparisons
 (assert (less 4 5))
 (assert (greatereq 1 1))
 
-; Numeral type checks
 (assert (isint 5))
 (assert (not (isint 5.0)))
 (assert (isreal 3.2))
