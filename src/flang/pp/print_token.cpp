@@ -13,6 +13,9 @@ std::ostream& operator<<(std::ostream& os, Token const& token) {
     case tkQUOTE:
       token_type_representation = "tkQUOTE";
       break;
+    case tkQUOTEMARK:
+      token_type_representation = "tkQUOTEMARK";
+      break;
     case tkSETQ:
       token_type_representation = "tkSETQ";
       break;
@@ -46,6 +49,8 @@ std::ostream& operator<<(std::ostream& os, Token const& token) {
     case tkREAL:
       token_type_representation = "tkREAL";
       break;
+    default:
+      throw std::runtime_error("Token print rules are not excessive!");
   }
   os << token_type_representation;
   return os;

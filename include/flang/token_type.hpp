@@ -5,6 +5,7 @@ enum TokenType {
   tkLPAREN,
   tkRPAREN,
   tkQUOTE,
+  tkQUOTEMARK,
   tkSETQ,
   tkFUNC,
   tkLAMBDA,
