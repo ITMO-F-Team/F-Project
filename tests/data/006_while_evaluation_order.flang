@@ -1,6 +1,3 @@
-; step values:
-; 0 -- in condition
-; 1 -- in loop body
 (setq step 0)
 (setq i 0)
 
