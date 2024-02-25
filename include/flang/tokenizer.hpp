@@ -1,6 +1,7 @@
 #pragma once
 
 #include <regex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -13,6 +14,8 @@ class Tokenizer {
   std::vector<Token> tokenize(std::string const& source) const;
 
  private:
+  std::string remove_comments(std::string const& source) const;
+
   // clang-format off
   const std::unordered_map<TokenType, std::regex> token_to_regex_ = {
       {tkLPAREN, std::regex("\\(")},

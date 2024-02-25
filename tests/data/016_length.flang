@@ -1,3 +1,5 @@
+; Returns the length of the list
+
 (func length (list)
   (cond (isnull list)
     0

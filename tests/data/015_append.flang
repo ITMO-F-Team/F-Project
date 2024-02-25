@@ -1,3 +1,5 @@
+; Returns a list with an element appended to the end
+
 (func append (list element)
   (cond (isnull list)
     '(element)
