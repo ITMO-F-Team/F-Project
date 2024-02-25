@@ -1,3 +1,5 @@
+; Returns factorial value of number `n`: n!
+
 (func factorial (n)
   (cond (lesseq n 1)
     1

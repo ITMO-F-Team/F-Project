@@ -1,3 +1,5 @@
+; Returns the maximum element from a list
+
 (func maxElement (lst)
   (cond (or (not (islist lst)) (isnull lst))
     null
