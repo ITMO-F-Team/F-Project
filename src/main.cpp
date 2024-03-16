@@ -4,7 +4,7 @@
 
 #include "flang/flang_exception.hpp"
 #include "flang/pp.hpp"
-#include "flang/tokenizer.hpp"
+#include "flang/tokenize/tokenizer.hpp"
 
 std::string readSource(std::string const& source_file_name) {
   std::ifstream input(source_file_name);

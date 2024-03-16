@@ -1,6 +1,6 @@
 add_library(flang
-        flang/token.cpp
-        flang/tokenizer.cpp
+        flang/tokenize/token.cpp
+        flang/tokenize/tokenizer.cpp
         flang/pp/print_token.cpp
 )
 
