@@ -7,6 +7,6 @@
 #include "flang/tokenize/token.hpp"
 
 namespace flang {
-std::ostream &operator<<(std::ostream &os, ProgramNode const &program);
+std::ostream& operator<<(std::ostream& os, ProgramNode const& program);
 
-} // namespace flang
+}  // namespace flang

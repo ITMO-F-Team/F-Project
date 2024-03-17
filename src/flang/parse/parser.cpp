@@ -13,8 +13,8 @@
 namespace flang {
 
 class Parser {
-public:
-  Parser(std::vector<Token> &tokens) : tokens(tokens), next_index(0) {}
+ public:
+  Parser(std::vector<Token>& tokens) : tokens(tokens), next_index(0) {}
 
   std::unique_ptr<ProgramNode> parse_program() {
     std::vector<std::unique_ptr<ElementNode>> elements;
@@ -28,8 +28,8 @@ public:
     return std::unique_ptr<ProgramNode>{node};
   }
 
-private:
-  std::vector<Token> &tokens;
+ private:
+  std::vector<Token>& tokens;
   int next_index;
 
   // ----- Parsers for main non-terminals -----
@@ -172,9 +172,7 @@ private:
     }
 
     // TODO: 🆘 please rewrite using make_unique or whatever
-    auto node = new CallNode(
-        std::make_unique<IdentifierNode>(IdentifierNode(callee.value())),
-        std::move(args));
+    auto node = new CallNode(std::make_unique<IdentifierNode>(IdentifierNode(callee.value())), std::move(args));
     return std::unique_ptr<CallNode>{node};
   }
 
@@ -198,8 +196,7 @@ private:
     auto args = parse_func_args();
     auto body = parse_element();
 
-    auto node =
-        new FuncNode(std::move(ident), std::move(args), std::move(body));
+    auto node = new FuncNode(std::move(ident), std::move(args), std::move(body));
     return std::unique_ptr<FuncNode>(node);
   }
 
@@ -267,8 +264,8 @@ private:
   bool at_eof() { return next_index >= tokens.size(); }
 };
 
-std::unique_ptr<ProgramNode> parse(std::vector<Token> &tokens) {
+std::unique_ptr<ProgramNode> parse(std::vector<Token>& tokens) {
   auto parser = new Parser(tokens);
   return parser->parse_program();
 }
-} // namespace flang
+}  // namespace flang
