@@ -35,7 +35,9 @@ int main(int argc, char* argv[]) {
 
     std::unique_ptr<flang::ProgramNode> prog = flang::parse(tokens);
     std::cout << "== AST ==\n";
-    std::cout << *prog.get();
+    if (prog) {
+      std::cout << *prog << '\n';
+    }
   } catch (flang::flang_exception const& e) {
     std::cerr << "\nERROR:" << e.what();
     return 1;
