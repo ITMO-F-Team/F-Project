@@ -118,7 +118,6 @@ std::unique_ptr<PureListNode> ParserImpl::parseList() {
   for (auto tok = peekNext(); tok.type() != tkRPAREN; tok = peekNext()) {
     elements.emplace_back(parseElement());
   }
-  eat(tkRPAREN);
 
   return std::make_unique<PureListNode>(std::move(elements));
 }
