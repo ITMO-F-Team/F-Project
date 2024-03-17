@@ -1,8 +1,10 @@
 #pragma once
 
+#include <flang/tokenize/token_type.hpp>
 #include <regex>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "token.hpp"
@@ -14,7 +16,7 @@ class Tokenizer {
 
  private:
   // clang-format off
-  const std::unordered_map<TokenType, std::regex> token_to_regex_ = {
+  const std::vector<std::pair<TokenType, std::regex>> token_to_regex_ = {
       {tkLPAREN, std::regex("\\(")},
       {tkRPAREN, std::regex("\\)")},
       {tkQUOTE, std::regex("quote")},
