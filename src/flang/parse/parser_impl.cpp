@@ -84,6 +84,9 @@ std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
     case tkLAMBDA:
       list_like_node = parseListLikeLambda();
       break;
+    case tkPROG:
+      list_like_node = parseListLikeProg();
+      break;
     case tkCOND:
       list_like_node = parseListLikeCond();
       break;
@@ -175,6 +178,14 @@ std::unique_ptr<LambdaNode> ParserImpl::parseListLikeLambda() {
   auto body = parseElement();
 
   return std::make_unique<LambdaNode>(std::move(args), std::move(body));
+}
+
+std::unique_ptr<ProgNode> ParserImpl::parseListLikeProg() {
+  eat(tkPROG);
+  auto args = parseFuncArguments();
+  auto body = parseElement();
+
+  return std::make_unique<ProgNode>(std::move(args), std::move(body));
 }
 
 std::unique_ptr<IntegerLiteralNode> ParserImpl::parseIntegerLiteral() {

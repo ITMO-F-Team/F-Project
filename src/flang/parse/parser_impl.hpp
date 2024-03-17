@@ -82,6 +82,8 @@ class ParserImpl {
 
   std::unique_ptr<LambdaNode> parseListLikeLambda();
 
+  std::unique_ptr<ProgNode> parseListLikeProg();
+
   std::unique_ptr<CondNode> parseListLikeCond();
 
   std::unique_ptr<WhileNode> parseListLikeWhile();
