@@ -78,9 +78,9 @@ class ParserImpl {
 
   std::unique_ptr<SetqNode> parseListLikeSetq();
 
-  //  std::unique_ptr<FuncNode> parseListLikeFunc();
+  std::unique_ptr<FuncNode> parseListLikeFunc();
 
-  //  std::unique_ptr<LambdaNode> parseListLikeLambda();
+  std::unique_ptr<LambdaNode> parseListLikeLambda();
 
   std::unique_ptr<CondNode> parseListLikeCond();
 
@@ -89,5 +89,7 @@ class ParserImpl {
   std::unique_ptr<ReturnNode> parseListLikeReturn();
 
   std::unique_ptr<BreakNode> parseListLikeBreak();
+
+  std::vector<std::unique_ptr<IdentifierNode>> parseFuncArguments();
 };
 }  // namespace flang
