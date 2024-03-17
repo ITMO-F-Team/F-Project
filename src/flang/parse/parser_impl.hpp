@@ -73,12 +73,24 @@ class ParserImpl {
   */
   std::unique_ptr<ElementNode> parseListLikeElement();
 
+  /**
+  List := Element* .
+  */
   std::unique_ptr<PureListNode> parseList();
 
+  /**
+  Call := Ident Element* .
+  */
   std::unique_ptr<CallNode> parseListLikeCall();
 
+  /**
+  Quote := quote Element .
+  */
   std::unique_ptr<QuoteNode> parseListLikeQuote();
 
+  /**
+  Setq := setq Ident Element .
+  */
   std::unique_ptr<SetqNode> parseListLikeSetq();
 
   std::unique_ptr<FuncNode> parseListLikeFunc();
