@@ -78,6 +78,12 @@ class ParserImpl {
 
   std::unique_ptr<SetqNode> parseListLikeSetq();
 
+  //  std::unique_ptr<FuncNode> parseListLikeFunc();
+
+  //  std::unique_ptr<LambdaNode> parseListLikeLambda();
+
+  std::unique_ptr<CondNode> parseListLikeCond();
+
   std::unique_ptr<WhileNode> parseListLikeWhile();
 
   std::unique_ptr<ReturnNode> parseListLikeReturn();

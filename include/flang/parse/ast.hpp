@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -171,6 +172,28 @@ class FuncNode : public ElementNode {
   std::unique_ptr<IdentifierNode> name_;
   std::vector<std::unique_ptr<IdentifierNode>> args_;
   std::unique_ptr<ElementNode> body_;
+};
+
+class CondNode : public ElementNode {
+ public:
+  CondNode(std::unique_ptr<ElementNode> condition, std::unique_ptr<ElementNode> then_branch,
+           std::unique_ptr<ElementNode> else_branch = nullptr)
+      : condition_(std::move(condition)), then_branch_(std::move(then_branch)), else_branch_(std::move(else_branch)) {}
+
+  virtual ~CondNode(){};
+
+  ElementNode const condition() const { return *condition_; }
+
+  ElementNode const& thenBranch() const { return *then_branch_; }
+
+  std::optional<ElementNode> const& elseBranch() const {
+    return (else_branch_ ? *else_branch_ : std::optional<ElementNode>());
+  };
+
+ private:
+  std::unique_ptr<ElementNode> condition_;
+  std::unique_ptr<ElementNode> then_branch_;
+  std::unique_ptr<ElementNode> else_branch_;
 };
 
 // ===== Program =====

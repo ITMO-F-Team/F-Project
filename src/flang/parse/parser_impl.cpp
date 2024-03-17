@@ -78,6 +78,9 @@ std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
     case tkIDENTIFIER:
       list_like_node = parseListLikeCall();
       break;
+    case tkCOND:
+      list_like_node = parseListLikeCond();
+      break;
     case tkWHILE:
       list_like_node = parseListLikeWhile();
       break;
@@ -116,6 +119,17 @@ std::unique_ptr<SetqNode> ParserImpl::parseListLikeSetq() {
   auto name = parseIdentifier();
   auto value = parseElement();
   return std::make_unique<SetqNode>(std::move(name), std::move(value));
+}
+
+std::unique_ptr<CondNode> ParserImpl::parseListLikeCond() {
+  eat(tkCOND);
+  auto condition = parseIdentifier();
+  auto then_branch = parseElement();
+  std::unique_ptr<ElementNode> else_branch = nullptr;
+  if (peekNext().type() != tkRPAREN) {
+    else_branch = parseElement();
+  }
+  return std::make_unique<CondNode>(std::move(condition), std::move(then_branch), std::move(else_branch));
 }
 
 std::unique_ptr<WhileNode> ParserImpl::parseListLikeWhile() {
