@@ -2,6 +2,10 @@
 
 #include "flang/flang_exception.hpp"
 #include "flang/pp/print_token.hpp"
+#include <flang/parse/ast.hpp>
+#include <flang/tokenize/token_type.hpp>
+#include <memory>
+#include <vector>
 
 namespace flang {
 bool ParserImpl::atEOF() const { return next_index_ >= tokens_.size(); }
@@ -46,7 +50,6 @@ Token ParserImpl::eat(TokenType token_type) {
 }
 
 std::unique_ptr<ElementNode> ParserImpl::parseElement() {
-  // TODO: Pure List ???
   auto token = peekNext();
   switch (token.type()) {
     case tkLPAREN:
@@ -98,12 +101,26 @@ std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
     case tkBREAK:
       list_like_node = parseListLikeBreak();
       break;
+    case tkLPAREN:
+      list_like_node = parseList();
+      break;
     default:
       throw parser_exception(std::string("Unexpected token (list): ") + token.value());
   }
   eat(tkRPAREN);
 
   return list_like_node;
+}
+
+std::unique_ptr<PureListNode> ParserImpl::parseList() {
+  std::vector<std::unique_ptr<ElementNode>> elements;
+
+  for (auto tok = peekNext(); tok.type() != tkRPAREN; tok = peekNext()) {
+    elements.emplace_back(parseElement());
+  }
+  eat(tkRPAREN);
+
+  return std::make_unique<PureListNode>(std::move(elements));
 }
 
 std::unique_ptr<QuoteNode> ParserImpl::parseListLikeQuote() {

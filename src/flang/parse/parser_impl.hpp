@@ -60,6 +60,7 @@ class ParserImpl {
   ListLikeElement := ( ListLikeElementBody ).
   ListLikeElementBody :=
     | Call
+    | List
     | Quote
     | Setq
     | Func
@@ -71,6 +72,8 @@ class ParserImpl {
     | Break
   */
   std::unique_ptr<ElementNode> parseListLikeElement();
+
+  std::unique_ptr<PureListNode> parseList();
 
   std::unique_ptr<CallNode> parseListLikeCall();
 
