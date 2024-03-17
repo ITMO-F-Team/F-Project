@@ -46,6 +46,7 @@ Token ParserImpl::eat(TokenType token_type) {
 }
 
 std::unique_ptr<ElementNode> ParserImpl::parseElement() {
+  // TODO: Pure List ???
   auto token = peekNext();
   switch (token.type()) {
     case tkLPAREN:
