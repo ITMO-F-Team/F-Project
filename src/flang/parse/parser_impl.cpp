@@ -147,7 +147,7 @@ std::unique_ptr<SetqNode> ParserImpl::parseListLikeSetq() {
 
 std::unique_ptr<CondNode> ParserImpl::parseListLikeCond() {
   eat(tkCOND);
-  auto condition = parseIdentifier();
+  auto condition = parseElement();
   auto then_branch = parseElement();
   std::unique_ptr<ElementNode> else_branch = nullptr;
   if (peekNext().type() != tkRPAREN) {
