@@ -71,5 +71,17 @@ class ParserImpl {
     | Break
   */
   std::unique_ptr<ElementNode> parseListLikeElement();
+
+  std::unique_ptr<CallNode> parseListLikeCall();
+
+  std::unique_ptr<QuoteNode> parseListLikeQuote();
+
+  std::unique_ptr<SetqNode> parseListLikeSetq();
+
+  std::unique_ptr<WhileNode> parseListLikeWhile();
+
+  std::unique_ptr<ReturnNode> parseListLikeReturn();
+
+  std::unique_ptr<BreakNode> parseListLikeBreak();
 };
 }  // namespace flang
