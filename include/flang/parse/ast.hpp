@@ -24,11 +24,11 @@ class AtomNode : public ElementNode {
 
 class IdentifierNode : public AtomNode {
  public:
-  IdentifierNode(std::string name) : name_(name) {}
+  IdentifierNode(std::string name) : name_(std::move(name)) {}
 
   virtual ~IdentifierNode() {}
 
-  std::string& name() const { return (std::string&)name_; }
+  std::string const& name() const { return name_; }
 
  private:
   std::string name_;
@@ -52,7 +52,7 @@ class RealLiteralNode : public AtomNode {
 
   virtual ~RealLiteralNode() {}
 
-  int value() const { return value_; }
+  double value() const { return value_; }
 
  private:
   double value_;
@@ -66,9 +66,7 @@ class PureListNode : public ElementNode {
 
   ~PureListNode() {}
 
-  std::vector<std::unique_ptr<ElementNode>>& elements() const {
-    return (std::vector<std::unique_ptr<ElementNode>>&)elements_;
-  }
+  std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
 
  private:
   std::vector<std::unique_ptr<ElementNode>> elements_;
@@ -81,9 +79,9 @@ class CallNode : public ElementNode {
 
   virtual ~CallNode() {}
 
-  IdentifierNode& callee() const { return *callee_.get(); }
+  IdentifierNode const& callee() const { return *callee_; }
 
-  std::vector<std::unique_ptr<ElementNode>>& args() const { return (std::vector<std::unique_ptr<ElementNode>>&)args_; }
+  std::vector<std::unique_ptr<ElementNode>> const& args() const { return args_; }
 
  private:
   std::unique_ptr<IdentifierNode> callee_;
@@ -98,7 +96,7 @@ class QuoteNode : public ElementNode {
 
   virtual ~QuoteNode() {}
 
-  ElementNode& name() const { return (ElementNode&)arg_; }
+  ElementNode const& name() const { return *arg_; }
 
  private:
   std::unique_ptr<ElementNode> arg_;
@@ -111,9 +109,9 @@ class SetqNode : public ElementNode {
 
   virtual ~SetqNode() {}
 
-  IdentifierNode& name() const { return (IdentifierNode&)name_; }
+  IdentifierNode const& name() const { return *name_; }
 
-  ElementNode& value() const { return (ElementNode&)value_; }
+  ElementNode const& value() const { return *value_; }
 
  private:
   std::unique_ptr<IdentifierNode> name_;
@@ -128,13 +126,11 @@ class FuncNode : public ElementNode {
 
   virtual ~FuncNode() {}
 
-  IdentifierNode& name() const { return (IdentifierNode&)name_; }
+  IdentifierNode const& name() const { return *name_; }
 
-  std::vector<std::unique_ptr<IdentifierNode>>& args() const {
-    return (std::vector<std::unique_ptr<IdentifierNode>>&)args_;
-  }
+  std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
 
-  ElementNode& body() const { return (ElementNode&)body_; }
+  ElementNode const& body() const { return *body_; }
 
  private:
   std::unique_ptr<IdentifierNode> name_;
@@ -150,9 +146,7 @@ class ProgramNode {
 
   ~ProgramNode() {}
 
-  std::vector<std::unique_ptr<ElementNode>>& elements() const {
-    return (std::vector<std::unique_ptr<ElementNode>>&)elements_;
-  }
+  std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
 
  private:
   std::vector<std::unique_ptr<ElementNode>> elements_;
