@@ -174,6 +174,22 @@ class FuncNode : public ElementNode {
   std::unique_ptr<ElementNode> body_;
 };
 
+class LambdaNode : public ElementNode {
+ public:
+  LambdaNode(std::vector<std::unique_ptr<IdentifierNode>> args, std::unique_ptr<ElementNode> body)
+      : args_(std::move(args)), body_(std::move(body)) {}
+
+  virtual ~LambdaNode(){};
+
+  std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
+
+  ElementNode const& body() const { return *body_; }
+
+ private:
+  std::vector<std::unique_ptr<IdentifierNode>> args_;
+  std::unique_ptr<ElementNode> body_;
+};
+
 class CondNode : public ElementNode {
  public:
   CondNode(std::unique_ptr<ElementNode> condition, std::unique_ptr<ElementNode> then_branch,

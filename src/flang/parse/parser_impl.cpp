@@ -78,6 +78,12 @@ std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
     case tkIDENTIFIER:
       list_like_node = parseListLikeCall();
       break;
+    case tkFUNC:
+      list_like_node = parseListLikeFunc();
+      break;
+    case tkLAMBDA:
+      list_like_node = parseListLikeLambda();
+      break;
     case tkCOND:
       list_like_node = parseListLikeCond();
       break;
@@ -154,6 +160,23 @@ std::unique_ptr<IdentifierNode> ParserImpl::parseIdentifier() {
   return std::make_unique<IdentifierNode>(token_value);
 }
 
+std::unique_ptr<FuncNode> ParserImpl::parseListLikeFunc() {
+  eat(tkFUNC);
+  auto name = parseIdentifier();
+  auto args = parseFuncArguments();
+  auto body = parseElement();
+
+  return std::make_unique<FuncNode>(std::move(name), std::move(args), std::move(body));
+}
+
+std::unique_ptr<LambdaNode> ParserImpl::parseListLikeLambda() {
+  eat(tkLAMBDA);
+  auto args = parseFuncArguments();
+  auto body = parseElement();
+
+  return std::make_unique<LambdaNode>(std::move(args), std::move(body));
+}
+
 std::unique_ptr<IntegerLiteralNode> ParserImpl::parseIntegerLiteral() {
   auto token_value = eat(tkINTEGER).value();
   return std::make_unique<IntegerLiteralNode>(std::stoi(token_value));
@@ -162,5 +185,15 @@ std::unique_ptr<IntegerLiteralNode> ParserImpl::parseIntegerLiteral() {
 std::unique_ptr<RealLiteralNode> ParserImpl::parseRealLiteral() {
   auto token_value = eat(tkREAL).value();
   return std::make_unique<RealLiteralNode>(std::stod(token_value));
+}
+
+std::vector<std::unique_ptr<IdentifierNode>> ParserImpl::parseFuncArguments() {
+  std::vector<std::unique_ptr<IdentifierNode>> args;
+  eat(tkLPAREN);
+  for (auto arg_ident = peekNext(); arg_ident.type() != tkRPAREN; arg_ident = peekNext()) {
+    args.emplace_back(parseIdentifier());
+  }
+  eat(tkRPAREN);
+  return std::move(args);
 }
 }  // namespace flang
