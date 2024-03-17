@@ -118,6 +118,41 @@ class SetqNode : public ElementNode {
   std::unique_ptr<ElementNode> value_;
 };
 
+class WhileNode : public ElementNode {
+ public:
+  WhileNode(std::unique_ptr<ElementNode> condition, std::unique_ptr<ElementNode> body)
+      : condition_(std::move(condition)), body_(std::move(body)) {}
+
+  virtual ~WhileNode(){};
+
+  ElementNode const& condition() const { return *condition_; }
+
+  ElementNode const& body() const { return *body_; }
+
+ private:
+  std::unique_ptr<ElementNode> condition_;
+  std::unique_ptr<ElementNode> body_;
+};
+
+class ReturnNode : public ElementNode {
+ public:
+  explicit ReturnNode(std::unique_ptr<ElementNode> value) : value_(std::move(value)) {}
+
+  virtual ~ReturnNode(){};
+
+  ElementNode const& value() const { return *value_; }
+
+ private:
+  std::unique_ptr<ElementNode> value_;
+};
+
+class BreakNode : public ElementNode {
+ public:
+  BreakNode() = default;
+
+  virtual ~BreakNode(){};
+};
+
 class FuncNode : public ElementNode {
  public:
   FuncNode(std::unique_ptr<IdentifierNode> name, std::vector<std::unique_ptr<IdentifierNode>> args,
