@@ -37,6 +37,7 @@ class ParserImpl {
     | Identifier
     | IntegerLiteral
     | RealLiteral
+    | ShortQuote
     | ListLikeElement
   */
   std::unique_ptr<ElementNode> parseElement();
@@ -55,6 +56,11 @@ class ParserImpl {
   RealLiteral := tkREAL.
   */
   std::unique_ptr<RealLiteralNode> parseRealLiteral();
+
+  /**
+  ShortQuote := ' Element.
+  */
+  std::unique_ptr<QuoteNode> parseShortQuote();
 
   /**
   ListLikeElement := ( ListLikeElementBody ).

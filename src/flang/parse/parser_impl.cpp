@@ -60,9 +60,17 @@ std::unique_ptr<ElementNode> ParserImpl::parseElement() {
       return parseIntegerLiteral();
     case tkREAL:
       return parseRealLiteral();
+    case tkQUOTEMARK:
+      return parseShortQuote();
     default:
       throw parser_exception(std::string("Unexpected token (parseElement): ") + token.value());
   }
+}
+
+std::unique_ptr<QuoteNode> ParserImpl::parseShortQuote() {
+  eat(tkQUOTEMARK);
+  auto arg = parseElement();
+  return std::make_unique<QuoteNode>(std::move(arg));
 }
 
 std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
