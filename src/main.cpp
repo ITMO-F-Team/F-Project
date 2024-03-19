@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
       std::cout << *prog << '\n';
     }
   } catch (flang::flang_exception const& e) {
-    std::cerr << "\nERROR:" << e.what();
+    std::cerr << "\nERROR: " << e.what();
     return 1;
   }
   return 0;

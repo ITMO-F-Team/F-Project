@@ -214,7 +214,7 @@ class CondNode : public ElementNode {
 
   virtual ~CondNode(){};
 
-  ElementNode const condition() const { return *condition_; }
+  ElementNode const& condition() const { return *condition_; }
 
   ElementNode const& thenBranch() const { return *then_branch_; }
 
