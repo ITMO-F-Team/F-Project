@@ -1,11 +1,12 @@
 #include "parser_impl.hpp"
 
-#include "flang/flang_exception.hpp"
-#include "flang/pp/print_token.hpp"
 #include <flang/parse/ast.hpp>
 #include <flang/tokenize/token_type.hpp>
 #include <memory>
 #include <vector>
+
+#include "flang/flang_exception.hpp"
+#include "flang/pp/print_token.hpp"
 
 namespace flang {
 bool ParserImpl::atEOF() const { return next_index_ >= tokens_.size(); }
@@ -109,11 +110,8 @@ std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
     case tkBREAK:
       list_like_node = parseListLikeBreak();
       break;
-    case tkLPAREN:
-      list_like_node = parseList();
-      break;
     default:
-      throw parser_exception(std::string("Unexpected token (list): ") + token.value());
+      list_like_node = parseList();
   }
   eat(tkRPAREN);
 
