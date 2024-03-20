@@ -8,12 +8,31 @@
 
 namespace flang {
 
+enum class ElementNodeType {
+  Identifier,
+  Call,
+  IntegerLiteral,
+  RealLiteral,
+  Setq,
+  Cond,
+  While,
+  PureList,
+  Prog,
+  Func,
+  Return,
+  Lambda,
+  Quote,
+  Break
+};
+
 // ===== Elements =====
 
 class ElementNode {
   // TODO(furetur): Add location to nodes for error reporting
  public:
   virtual ~ElementNode() {}
+
+  virtual ElementNodeType type() const = 0;
 };
 
 // --- Atoms ---
@@ -31,6 +50,8 @@ class IdentifierNode : public AtomNode {
 
   std::string const& name() const { return name_; }
 
+  ElementNodeType type() const override { return ElementNodeType::Identifier; }
+
  private:
   std::string name_;
 };
@@ -43,6 +64,8 @@ class IntegerLiteralNode : public AtomNode {
 
   int value() const { return value_; }
 
+  ElementNodeType type() const override { return ElementNodeType::IntegerLiteral; }
+
  private:
   int value_;
 };
@@ -54,6 +77,8 @@ class RealLiteralNode : public AtomNode {
   virtual ~RealLiteralNode() {}
 
   double value() const { return value_; }
+
+  ElementNodeType type() const override { return ElementNodeType::RealLiteral; }
 
  private:
   double value_;
@@ -68,6 +93,8 @@ class PureListNode : public ElementNode {
   ~PureListNode() {}
 
   std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
+
+  ElementNodeType type() const override { return ElementNodeType::PureList; }
 
  private:
   std::vector<std::unique_ptr<ElementNode>> elements_;
@@ -84,6 +111,8 @@ class CallNode : public ElementNode {
 
   std::vector<std::unique_ptr<ElementNode>> const& args() const { return args_; }
 
+  ElementNodeType type() const override { return ElementNodeType::Call; }
+
  private:
   std::unique_ptr<IdentifierNode> callee_;
   std::vector<std::unique_ptr<ElementNode>> args_;
@@ -99,6 +128,8 @@ class QuoteNode : public ElementNode {
 
   ElementNode const& arg() const { return *arg_; }
 
+  ElementNodeType type() const override { return ElementNodeType::Quote; }
+
  private:
   std::unique_ptr<ElementNode> arg_;
 };
@@ -113,6 +144,8 @@ class SetqNode : public ElementNode {
   IdentifierNode const& name() const { return *name_; }
 
   ElementNode const& value() const { return *value_; }
+
+  ElementNodeType type() const override { return ElementNodeType::Setq; }
 
  private:
   std::unique_ptr<IdentifierNode> name_;
@@ -130,6 +163,8 @@ class WhileNode : public ElementNode {
 
   ElementNode const& body() const { return *body_; }
 
+  ElementNodeType type() const override { return ElementNodeType::While; }
+
  private:
   std::unique_ptr<ElementNode> condition_;
   std::unique_ptr<ElementNode> body_;
@@ -143,6 +178,8 @@ class ReturnNode : public ElementNode {
 
   ElementNode const& value() const { return *value_; }
 
+  ElementNodeType type() const override { return ElementNodeType::Return; }
+
  private:
   std::unique_ptr<ElementNode> value_;
 };
@@ -152,6 +189,8 @@ class BreakNode : public ElementNode {
   BreakNode() = default;
 
   virtual ~BreakNode(){};
+
+  ElementNodeType type() const override { return ElementNodeType::Break; }
 };
 
 class FuncNode : public ElementNode {
@@ -167,6 +206,8 @@ class FuncNode : public ElementNode {
   std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
 
   ElementNode const& body() const { return *body_; }
+
+  ElementNodeType type() const override { return ElementNodeType::Func; }
 
  private:
   std::unique_ptr<IdentifierNode> name_;
@@ -185,6 +226,8 @@ class LambdaNode : public ElementNode {
 
   ElementNode const& body() const { return *body_; }
 
+  ElementNodeType type() const override { return ElementNodeType::Lambda; }
+
  private:
   std::vector<std::unique_ptr<IdentifierNode>> args_;
   std::unique_ptr<ElementNode> body_;
@@ -200,6 +243,8 @@ class ProgNode : public ElementNode {
   std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
 
   ElementNode const& body() const { return *body_; }
+
+  ElementNodeType type() const override { return ElementNodeType::Prog; }
 
  private:
   std::vector<std::unique_ptr<IdentifierNode>> args_;
@@ -225,6 +270,8 @@ class CondNode : public ElementNode {
       return std::nullopt;
     }
   };
+
+  ElementNodeType type() const override { return ElementNodeType::Cond; }
 
  private:
   std::unique_ptr<ElementNode> condition_;
