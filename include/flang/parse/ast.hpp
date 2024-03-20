@@ -218,8 +218,12 @@ class CondNode : public ElementNode {
 
   ElementNode const& thenBranch() const { return *then_branch_; }
 
-  std::optional<ElementNode> const& elseBranch() const {
-    return (else_branch_ ? *else_branch_ : std::optional<ElementNode>());
+  std::optional<std::reference_wrapper<const ElementNode>> elseBranch() const {
+    if (else_branch_) {
+      return std::cref(*else_branch_);
+    } else {
+      return std::nullopt;
+    }
   };
 
  private:

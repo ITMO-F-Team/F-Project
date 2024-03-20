@@ -166,8 +166,11 @@ void shit_out_cond(std::ostream& os, CondNode const& node) {
   os << std::string(",\nThen: ");
   shit_out_element(os, node.thenBranch());
   os << std::string(",\nElse: ");
-  // shit_out_element(os, node.elseBranch());
-  os << std::string("<NOT IMPLEMENTED YET (ERROR HERE)>");
+  if (node.elseBranch().has_value()) {
+    shit_out_element(os, node.elseBranch().value());
+  } else {
+    os << std::string("<empty>");
+  }
   os << std::string("})");
 }
 
