@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "flang/tokenizer.hpp"
+#include "flang/tokenize/tokenizer.hpp"
 
 using namespace flang;
 

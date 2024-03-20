@@ -1,7 +1,10 @@
 add_library(flang
-        flang/token.cpp
-        flang/tokenizer.cpp
         flang/pp/print_token.cpp
+        flang/pp/print_ast.cpp
+        flang/tokenize/token.cpp
+        flang/tokenize/tokenizer.cpp
+        flang/parse/parser_impl.cpp
+        flang/parse/parser.cpp
 )
 
 target_include_directories(

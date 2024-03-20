@@ -13,4 +13,9 @@ class tokenizer_exception : public flang_exception {
  public:
   explicit tokenizer_exception(std::string const& e_msg) : flang_exception(e_msg) {}
 };
+
+class parser_exception : public flang_exception {
+ public:
+  explicit parser_exception(std::string const& e_msg) : flang_exception(e_msg) {}
+};
 }  // namespace flang

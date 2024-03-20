@@ -1,4 +1,4 @@
-#include "flang/token.hpp"
+#include "flang/tokenize/token.hpp"
 
 namespace flang {
 Token::Token(TokenType type, std::string value, size_t line, size_t col)
