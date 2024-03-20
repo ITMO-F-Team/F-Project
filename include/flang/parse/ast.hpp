@@ -97,7 +97,7 @@ class QuoteNode : public ElementNode {
 
   virtual ~QuoteNode() {}
 
-  ElementNode const& name() const { return *arg_; }
+  ElementNode const& arg() const { return *arg_; }
 
  private:
   std::unique_ptr<ElementNode> arg_;

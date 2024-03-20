@@ -28,6 +28,8 @@ void shit_out_return(std::ostream& os, ReturnNode const& node);
 
 void shit_out_lambda(std::ostream& os, LambdaNode const& node);
 
+void shit_out_quote(std::ostream& os, QuoteNode const& node);
+
 // 🤡 Эти ебаные перегрузки (<<) не выбираются так как я хочу
 // Поэтому сделаю по-старинке
 void shit_out_element(std::ostream& os, ElementNode const& element) {
@@ -79,7 +81,12 @@ void shit_out_element(std::ostream& os, ElementNode const& element) {
                         if (lambda_node) {
                           shit_out_lambda(os, *lambda_node);
                         } else {
-                          throw std::runtime_error("Not implemented");
+                          const QuoteNode* quote_node = dynamic_cast<QuoteNode const*>(&element);
+                          if (quote_node) {
+                            shit_out_quote(os, *quote_node);
+                          } else {
+                            throw std::runtime_error("Not implemented");
+                          }
                         }
                       }
                     }
@@ -92,6 +99,12 @@ void shit_out_element(std::ostream& os, ElementNode const& element) {
       }
     }
   }
+}
+
+void shit_out_quote(std::ostream& os, QuoteNode const& node) {
+  os << std::string("(Quote {");
+  shit_out_element(os, node.arg());
+  os << std::string("})");
 }
 
 void shit_out_lambda(std::ostream& os, LambdaNode const& node) {
