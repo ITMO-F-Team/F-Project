@@ -1,7 +1,8 @@
 (func maxElement (lst)
   (cond (or (not (islist lst)) (isnull lst))
     null
-    (setq maxRest (maxElement (tail lst))
+    (
+      (setq maxRest (maxElement (tail lst)))
       (cond (or (isnull maxRest) (greatereq (head lst) maxRest))
         (head lst)
         maxRest
