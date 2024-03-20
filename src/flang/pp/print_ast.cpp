@@ -32,79 +32,80 @@ void shit_out_quote(std::ostream& os, QuoteNode const& node);
 
 void shit_out_break(std::ostream& os, BreakNode const& node);
 
-// 🤡 Эти ебаные перегрузки (<<) не выбираются так как я хочу
-// Поэтому сделаю по-старинке
 void shit_out_element(std::ostream& os, ElementNode const& element) {
-  const IdentifierNode* identifier_node = dynamic_cast<IdentifierNode const*>(&element);
-  if (identifier_node) {
-    shit_out_identifier(os, *identifier_node);
-  } else {
-    const CallNode* call_node = dynamic_cast<CallNode const*>(&element);
-    if (call_node) {
-      shit_out_call_node(os, *call_node);
-    } else {
-      const IntegerLiteralNode* integer_node = dynamic_cast<IntegerLiteralNode const*>(&element);
-      if (integer_node) {
-        shit_out_integer_literal(os, *integer_node);
-      } else {
-        auto node = dynamic_cast<RealLiteralNode const*>(&element);
-        if (node) {
-          shit_out_real_literal(os, *node);
-        } else {
-          const SetqNode* setq_node = dynamic_cast<SetqNode const*>(&element);
-          if (setq_node) {
-            shit_out_setq(os, *setq_node);
-          } else {
-            const CondNode* cond_node = dynamic_cast<CondNode const*>(&element);
-            if (cond_node) {
-              shit_out_cond(os, *cond_node);
-            } else {
-              const WhileNode* while_node = dynamic_cast<WhileNode const*>(&element);
-              if (while_node) {
-                shit_out_while(os, *while_node);
-              } else {
-                const PureListNode* pure_list_node = dynamic_cast<PureListNode const*>(&element);
-                if (pure_list_node) {
-                  shit_out_pure_list(os, *pure_list_node);
-                } else {
-                  const ProgNode* prog_node = dynamic_cast<ProgNode const*>(&element);
-                  if (prog_node) {
-                    shit_out_prog(os, *prog_node);
-                  } else {
-                    const FuncNode* func_node = dynamic_cast<FuncNode const*>(&element);
-                    if (func_node) {
-                      shit_out_func(os, *func_node);
-                    } else {
-                      const ReturnNode* return_node = dynamic_cast<ReturnNode const*>(&element);
-                      if (return_node) {
-                        shit_out_return(os, *return_node);
-                      } else {
-                        const LambdaNode* lambda_node = dynamic_cast<LambdaNode const*>(&element);
-                        if (lambda_node) {
-                          shit_out_lambda(os, *lambda_node);
-                        } else {
-                          const QuoteNode* quote_node = dynamic_cast<QuoteNode const*>(&element);
-                          if (quote_node) {
-                            shit_out_quote(os, *quote_node);
-                          } else {
-                            const BreakNode* break_node = dynamic_cast<BreakNode const*>(&element);
-                            if (break_node) {
-                              shit_out_break(os, *break_node);
-                            } else {
-                              throw std::runtime_error("Not implemented");
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+  switch (element.type()) {
+    case ElementNodeType::Identifier:
+      if (const IdentifierNode* identifier_node = dynamic_cast<IdentifierNode const*>(&element)) {
+        shit_out_identifier(os, *identifier_node);
       }
-    }
+      break;
+    case ElementNodeType::Call:
+      if (const CallNode* call_node = dynamic_cast<CallNode const*>(&element)) {
+        shit_out_call_node(os, *call_node);
+      }
+      break;
+    case ElementNodeType::IntegerLiteral:
+      if (const IntegerLiteralNode* integer_node = dynamic_cast<IntegerLiteralNode const*>(&element)) {
+        shit_out_integer_literal(os, *integer_node);
+      }
+      break;
+    case ElementNodeType::RealLiteral:
+      if (const RealLiteralNode* real_node = dynamic_cast<RealLiteralNode const*>(&element)) {
+        shit_out_real_literal(os, *real_node);
+      }
+      break;
+    case ElementNodeType::Setq:
+      if (const SetqNode* setq_node = dynamic_cast<SetqNode const*>(&element)) {
+        shit_out_setq(os, *setq_node);
+      }
+      break;
+    case ElementNodeType::Cond:
+      if (const CondNode* cond_node = dynamic_cast<CondNode const*>(&element)) {
+        shit_out_cond(os, *cond_node);
+      }
+      break;
+    case ElementNodeType::While:
+      if (const WhileNode* while_node = dynamic_cast<WhileNode const*>(&element)) {
+        shit_out_while(os, *while_node);
+      }
+      break;
+    case ElementNodeType::PureList:
+      if (const PureListNode* pure_list_node = dynamic_cast<PureListNode const*>(&element)) {
+        shit_out_pure_list(os, *pure_list_node);
+      }
+      break;
+    case ElementNodeType::Prog:
+      if (const ProgNode* prog_node = dynamic_cast<ProgNode const*>(&element)) {
+        shit_out_prog(os, *prog_node);
+      }
+      break;
+    case ElementNodeType::Func:
+      if (const FuncNode* func_node = dynamic_cast<FuncNode const*>(&element)) {
+        shit_out_func(os, *func_node);
+      }
+      break;
+    case ElementNodeType::Return:
+      if (const ReturnNode* return_node = dynamic_cast<ReturnNode const*>(&element)) {
+        shit_out_return(os, *return_node);
+      }
+      break;
+    case ElementNodeType::Lambda:
+      if (const LambdaNode* lambda_node = dynamic_cast<LambdaNode const*>(&element)) {
+        shit_out_lambda(os, *lambda_node);
+      }
+      break;
+    case ElementNodeType::Quote:
+      if (const QuoteNode* quote_node = dynamic_cast<QuoteNode const*>(&element)) {
+        shit_out_quote(os, *quote_node);
+      }
+      break;
+    case ElementNodeType::Break:
+      if (const BreakNode* break_node = dynamic_cast<BreakNode const*>(&element)) {
+        shit_out_break(os, *break_node);
+      }
+      break;
+    default:
+      throw std::runtime_error("Not implemented");
   }
 }
 
