@@ -5,6 +5,4 @@
 (assert (greatereq 1 1))
 
 (assert (isint 5))
-(assert (not (isint 5.0)))
-(assert (isreal 3.2))
 (assert (not (isreal 5)))

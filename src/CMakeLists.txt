@@ -21,6 +21,8 @@ target_compile_options(flang
         $<$<CONFIG:RELEASE>:-O3>
 )
 
+target_link_libraries(flang PRIVATE nlohmann_json::nlohmann_json)
+
 add_executable(flang-interpreter
         main.cpp)
 

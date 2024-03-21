@@ -1,107 +1,83 @@
-#include <flang/parse/ast.hpp>
+#include "flang/pp/print_ast.hpp"
+
 #include <stdexcept>
-#include <string>
+
+#include "print_ast_impl.hpp"
+
+using json = nlohmann::ordered_json;
 
 namespace flang {
 
-void print_identifier(std::ostream& os, IdentifierNode const& node);
-
-void print_call_node(std::ostream& os, CallNode const& node);
-
-void print_integer_literal(std::ostream& os, IntegerLiteralNode const& node);
-
-void print_real_literal(std::ostream& os, RealLiteralNode const& node);
-
-void print_setq(std::ostream& os, SetqNode const& node);
-
-void print_cond(std::ostream& os, CondNode const& node);
-
-void print_while(std::ostream& os, WhileNode const& node);
-
-void print_pure_list(std::ostream& os, PureListNode const& node);
-
-void print_prog(std::ostream& os, ProgNode const& node);
-
-void print_func(std::ostream& os, FuncNode const& node);
-
-void print_return(std::ostream& os, ReturnNode const& node);
-
-void print_lambda(std::ostream& os, LambdaNode const& node);
-
-void print_quote(std::ostream& os, QuoteNode const& node);
-
-void print_break(std::ostream& os, BreakNode const& node);
-
-void print_element(std::ostream& os, ElementNode const& element) {
+void print_element(ElementNode const& element, json& output) {
   switch (element.type()) {
     case ElementNodeType::Identifier:
       if (const IdentifierNode* identifier_node = dynamic_cast<IdentifierNode const*>(&element)) {
-        print_identifier(os, *identifier_node);
+        print_identifier(*identifier_node, output);
       }
       break;
     case ElementNodeType::Call:
       if (const CallNode* call_node = dynamic_cast<CallNode const*>(&element)) {
-        print_call_node(os, *call_node);
+        print_call_node(*call_node, output);
       }
       break;
     case ElementNodeType::IntegerLiteral:
       if (const IntegerLiteralNode* integer_node = dynamic_cast<IntegerLiteralNode const*>(&element)) {
-        print_integer_literal(os, *integer_node);
+        print_integer_literal(*integer_node, output);
       }
       break;
     case ElementNodeType::RealLiteral:
       if (const RealLiteralNode* real_node = dynamic_cast<RealLiteralNode const*>(&element)) {
-        print_real_literal(os, *real_node);
+        print_real_literal(*real_node, output);
       }
       break;
     case ElementNodeType::Setq:
       if (const SetqNode* setq_node = dynamic_cast<SetqNode const*>(&element)) {
-        print_setq(os, *setq_node);
+        print_setq(*setq_node, output);
       }
       break;
     case ElementNodeType::Cond:
       if (const CondNode* cond_node = dynamic_cast<CondNode const*>(&element)) {
-        print_cond(os, *cond_node);
+        print_cond(*cond_node, output);
       }
       break;
     case ElementNodeType::While:
       if (const WhileNode* while_node = dynamic_cast<WhileNode const*>(&element)) {
-        print_while(os, *while_node);
+        print_while(*while_node, output);
       }
       break;
     case ElementNodeType::PureList:
       if (const PureListNode* pure_list_node = dynamic_cast<PureListNode const*>(&element)) {
-        print_pure_list(os, *pure_list_node);
+        print_pure_list(*pure_list_node, output);
       }
       break;
     case ElementNodeType::Prog:
       if (const ProgNode* prog_node = dynamic_cast<ProgNode const*>(&element)) {
-        print_prog(os, *prog_node);
+        print_prog(*prog_node, output);
       }
       break;
     case ElementNodeType::Func:
       if (const FuncNode* func_node = dynamic_cast<FuncNode const*>(&element)) {
-        print_func(os, *func_node);
+        print_func(*func_node, output);
       }
       break;
     case ElementNodeType::Return:
       if (const ReturnNode* return_node = dynamic_cast<ReturnNode const*>(&element)) {
-        print_return(os, *return_node);
+        print_return(*return_node, output);
       }
       break;
     case ElementNodeType::Lambda:
       if (const LambdaNode* lambda_node = dynamic_cast<LambdaNode const*>(&element)) {
-        print_lambda(os, *lambda_node);
+        print_lambda(*lambda_node, output);
       }
       break;
     case ElementNodeType::Quote:
       if (const QuoteNode* quote_node = dynamic_cast<QuoteNode const*>(&element)) {
-        print_quote(os, *quote_node);
+        print_quote(*quote_node, output);
       }
       break;
     case ElementNodeType::Break:
       if (const BreakNode* break_node = dynamic_cast<BreakNode const*>(&element)) {
-        print_break(os, *break_node);
+        print_break(*break_node, output);
       }
       break;
     default:
@@ -109,142 +85,134 @@ void print_element(std::ostream& os, ElementNode const& element) {
   }
 }
 
-void print_break(std::ostream& os, BreakNode const& node) { os << std::string("(Break)"); }
+void print_break(BreakNode const& node, json& output) { output["break"] = {}; }
 
-void print_quote(std::ostream& os, QuoteNode const& node) {
-  os << std::string("(Quote {");
-  print_element(os, node.arg());
-  os << std::string("})");
-}
+void print_quote(QuoteNode const& node, json& output) { print_element(node.arg(), output["quote"]); }
 
-void print_lambda(std::ostream& os, LambdaNode const& node) {
-  os << std::string("(Lambda {");
-  os << std::string(",\t\nArguments: ");
+void print_lambda(LambdaNode const& node, json& output) {
+  json lambda_output;
+  lambda_output["lambda"] = {};
+
+  if (node.args().empty()) {
+    lambda_output["lambda"]["args"] = {};
+  }
+
   for (const auto& arg : node.args()) {
-    print_element(os, *arg);
-    os << std::string(", ");
+    json arg_output;
+    print_element(*arg, arg_output);
+    lambda_output["lambda"]["args"].push_back(arg_output);
   }
-  os << std::string(",\t\nBody: ");
-  print_element(os, node.body());
-  os << std::string("})");
+  print_element(node.body(), lambda_output["lambda"]["body"]);
+  output.push_back(lambda_output);
 }
 
-void print_return(std::ostream& os, ReturnNode const& node) {
-  os << std::string("(Return {");
-  os << std::string("Value: ");
-  print_element(os, node.value());
-  os << std::string("})");
-}
+void print_return(ReturnNode const& node, json& output) { print_element(node.value(), output["return"]); }
 
-void print_func(std::ostream& os, FuncNode const& node) {
-  os << std::string("(Func {");
-  os << std::string("\t\nIdentifier: ");
-  print_element(os, node.name());
-  os << std::string(",\t\nArguments: ");
+void print_func(FuncNode const& node, json& output) {
+  json func_output;
+  func_output["func"] = {};
+  print_element(node.name(), func_output["func"]["name"]);
+
+  if (node.args().empty()) {
+    func_output["func"]["args"] = {};
+  }
+
   for (const auto& arg : node.args()) {
-    print_element(os, *arg);
-    os << std::string(", ");
+    json arg_output;
+    print_element(*arg, arg_output);
+    func_output["func"]["args"].push_back(arg_output);
   }
-  os << std::string(",\t\nBody: ");
-  print_element(os, node.body());
-  os << std::string("})");
+  print_element(node.body(), func_output["func"]["body"]);
+  output.push_back(func_output);
 }
 
-void print_prog(std::ostream& os, ProgNode const& node) {
-  os << std::string("(Prog {");
-  os << std::string("Arguments: [");
+void print_prog(ProgNode const& node, json& output) {
+  json prog_output;
+  prog_output["prog"] = {};
+
+  if (node.args().empty()) {
+    prog_output["prog"]["args"] = {};
+  }
+
   for (const auto& arg : node.args()) {
-    print_element(os, *arg);
-    os << std::string(", ");
+    json arg_output;
+    print_element(*arg, arg_output);
+    prog_output["prog"]["args"].push_back(arg_output);
   }
-  os << std::string("]");
-  os << std::string(", Body: ");
-  print_element(os, node.body());
-  os << std::string(")");
+  print_element(node.body(), prog_output["prog"]["body"]);
+  output.push_back(prog_output);
 }
 
-void print_pure_list(std::ostream& os, PureListNode const& node) {
-  os << std::string("(PureListNode [");
-  for (const auto& element : node.elements()) {
-    os << std::string("\n\t");
-    print_element(os, *element);
-    os << std::string(",");
+void print_pure_list(PureListNode const& node, json& output) {
+  json pure_list_output;
+  pure_list_output["pure_list"] = {};
+  for (const auto& item : node.elements()) {
+    json item_output;
+    print_element(*item, item_output);
+    pure_list_output["pure_list"].push_back(item_output);
   }
-  os << std::string("])");
+  output.push_back(pure_list_output);
 }
 
-void print_while(std::ostream& os, WhileNode const& node) {
-  os << std::string("(While {");
-  os << std::string("\nCondition: ");
-  print_element(os, node.condition());
-  os << std::string(",\nBody: [");
-  print_element(os, node.body());
-  os << std::string("]})");
+void print_while(WhileNode const& node, json& output) {
+  json while_output;
+  while_output["while"] = {};
+  print_element(node.condition(), while_output["while"]["condition"]);
+  print_element(node.body(), while_output["while"]["body"]);
+  output.push_back(while_output);
 }
 
-void print_cond(std::ostream& os, CondNode const& node) {
-  os << std::string("(Cond {");
-  os << std::string("\nCondition: ");
-  print_element(os, node.condition());
-  os << std::string(",\nThen: ");
-  print_element(os, node.thenBranch());
-  os << std::string(",\nElse: ");
+void print_cond(CondNode const& node, json& output) {
+  json cond_output;
+  cond_output["cond"] = {};
+  print_element(node.condition(), cond_output["cond"]["condition"]);
+  print_element(node.thenBranch(), cond_output["cond"]["then_branch"]);
   if (node.elseBranch().has_value()) {
-    print_element(os, node.elseBranch().value());
+    print_element(node.elseBranch().value(), cond_output["cond"]["else_branch"]);
   } else {
-    os << std::string("<empty>");
+    cond_output["cond"]["else_branch"] = {};
   }
-  os << std::string("})");
+  output.push_back(cond_output);
 }
 
-void print_setq(std::ostream& os, SetqNode const& node) {
-  os << std::string("(Setq {");
-  os << std::string("Identifier: ");
-  print_identifier(os, node.name());
-  os << std::string(", Value: ");
-  print_element(os, node.value());
-  os << std::string("})");
+void print_setq(SetqNode const& node, json& output) {
+  json setq_output;
+  setq_output["setq"] = {};
+  print_identifier(node.name(), setq_output["setq"]["name"]);
+  print_element(node.value(), setq_output["setq"]["value"]);
+  output.push_back(setq_output);
 }
 
-void print_identifier(std::ostream& os, IdentifierNode const& node) { os << node.name(); }
+void print_identifier(IdentifierNode const& node, json& output) { output["identifier"] = node.name(); }
 
-void print_integer_literal(std::ostream& os, IntegerLiteralNode const& node) { os << std::to_string(node.value()); }
+void print_integer_literal(IntegerLiteralNode const& node, json& output) { output["integer"] = node.value(); }
 
-void print_real_literal(std::ostream& os, RealLiteralNode const& node) { os << std::to_string(node.value()); }
+void print_real_literal(RealLiteralNode const& node, json& output) { output["real"] = node.value(); }
 
-void print_call_node(std::ostream& os, CallNode const& node) {
-  os << std::string("(Call ");
-  print_identifier(os, node.callee());
-  os << std::string(" [");
-  for (auto& arg : node.args()) {
-    print_element(os, *arg.get());
-    os << std::string(", ");
+void print_call_node(CallNode const& node, json& output) {
+  json call_output;
+  call_output["call"] = {};
+  print_identifier(node.callee(), call_output["call"]["name"]);
+
+  if (node.args().empty()) {
+    call_output["call"]["args"] = {};
   }
-  os << std::string("])");
+
+  for (const auto& arg : node.args()) {
+    json arg_output;
+    print_element(*arg.get(), arg_output);
+    call_output["call"]["args"].push_back(arg_output);
+  }
+  output.push_back(call_output);
 }
 
 void print_prog(std::ostream& os, ProgramNode const& node) {
-  os << std::string("(Program \n");
+  json output;
+  output["program"] = {};
   for (auto& el : node.elements()) {
-    print_element(os, *el.get());
-    os << std::string("\n");
+    print_element(*el.get(), output["program"]);
   }
-  os << std::string(")");
-}
-
-std::ostream& operator<<(std::ostream& os, ElementNode const& element) {
-  print_element(os, element);
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, IdentifierNode const& node) {
-  print_identifier(os, node);
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, CallNode const& node) {
-  print_call_node(os, node);
-  return os;
+  os << std::setw(2) << output;
 }
 
 std::ostream& operator<<(std::ostream& os, ProgramNode const& prog) {
