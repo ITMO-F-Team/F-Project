@@ -25,12 +25,50 @@ enum class ElementNodeType {
   Break
 };
 
+class AtomNode;
+class IdentifierNode;
+class IntegerLiteralNode;
+class RealLiteralNode;
+class PureListNode;
+class CallNode;
+class QuoteNode;
+class SetqNode;
+class WhileNode;
+class ReturnNode;
+class BreakNode;
+class FuncNode;
+class LambdaNode;
+class ProgNode;
+class CondNode;
+class ProgramNode;
+
+class visitor {
+ public:
+  virtual void visitIdentifier(IdentifierNode const& node) = 0;
+  virtual void visitIntegerLiteral(IntegerLiteralNode const& node) = 0;
+  virtual void visitRealLiteral(RealLiteralNode const& node) = 0;
+  virtual void visitPureList(PureListNode const& node) = 0;
+  virtual void visitCall(CallNode const& node) = 0;
+  virtual void visitQuote(QuoteNode const& node) = 0;
+  virtual void visitSetq(SetqNode const& node) = 0;
+  virtual void visitWhile(WhileNode const& node) = 0;
+  virtual void visitReturn(ReturnNode const& node) = 0;
+  virtual void visitBreak(BreakNode const& node) = 0;
+  virtual void visitFunc(FuncNode const& node) = 0;
+  virtual void visitLambda(LambdaNode const& node) = 0;
+  virtual void visitProg(ProgNode const& node) = 0;
+  virtual void visitCond(CondNode const& node) = 0;
+  virtual void visitProgram(ProgramNode const& node) = 0;
+};
+
 // ===== Elements =====
 
 class ElementNode {
   // TODO(furetur): Add location to nodes for error reporting
  public:
   virtual ~ElementNode() {}
+
+  virtual void accept(visitor& visitor) const = 0;
 
   virtual ElementNodeType type() const = 0;
 };
@@ -48,6 +86,8 @@ class IdentifierNode : public AtomNode {
 
   virtual ~IdentifierNode() {}
 
+  virtual void accept(visitor& visitor) const override { visitor.visitIdentifier(*this); }
+
   std::string const& name() const { return name_; }
 
   ElementNodeType type() const override { return ElementNodeType::Identifier; }
@@ -61,6 +101,8 @@ class IntegerLiteralNode : public AtomNode {
   IntegerLiteralNode(int value) : value_(value) {}
 
   virtual ~IntegerLiteralNode() {}
+
+  virtual void accept(visitor& visitor) const override { visitor.visitIntegerLiteral(*this); }
 
   int value() const { return value_; }
 
@@ -76,6 +118,8 @@ class RealLiteralNode : public AtomNode {
 
   virtual ~RealLiteralNode() {}
 
+  virtual void accept(visitor& visitor) const override { visitor.visitRealLiteral(*this); }
+
   double value() const { return value_; }
 
   ElementNodeType type() const override { return ElementNodeType::RealLiteral; }
@@ -90,7 +134,9 @@ class PureListNode : public ElementNode {
  public:
   PureListNode(std::vector<std::unique_ptr<ElementNode>> elements) : elements_(std::move(elements)) {}
 
-  ~PureListNode() {}
+  virtual ~PureListNode() {}
+
+  virtual void accept(visitor& visitor) const override { visitor.visitPureList(*this); }
 
   std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
 
@@ -106,6 +152,8 @@ class CallNode : public ElementNode {
       : callee_(std::move(callee)), args_(std::move(args)) {}
 
   virtual ~CallNode() {}
+
+  virtual void accept(visitor& visitor) const override { visitor.visitCall(*this); }
 
   IdentifierNode const& callee() const { return *callee_; }
 
@@ -126,6 +174,8 @@ class QuoteNode : public ElementNode {
 
   virtual ~QuoteNode() {}
 
+  virtual void accept(visitor& visitor) const override { visitor.visitQuote(*this); }
+
   ElementNode const& arg() const { return *arg_; }
 
   ElementNodeType type() const override { return ElementNodeType::Quote; }
@@ -140,6 +190,8 @@ class SetqNode : public ElementNode {
       : name_(std::move(name)), value_(std::move(value)) {}
 
   virtual ~SetqNode() {}
+
+  virtual void accept(visitor& visitor) const override { visitor.visitSetq(*this); }
 
   IdentifierNode const& name() const { return *name_; }
 
@@ -159,6 +211,8 @@ class WhileNode : public ElementNode {
 
   virtual ~WhileNode(){};
 
+  virtual void accept(visitor& visitor) const override { visitor.visitWhile(*this); }
+
   ElementNode const& condition() const { return *condition_; }
 
   ElementNode const& body() const { return *body_; }
@@ -176,6 +230,8 @@ class ReturnNode : public ElementNode {
 
   virtual ~ReturnNode(){};
 
+  virtual void accept(visitor& visitor) const override { visitor.visitReturn(*this); }
+
   ElementNode const& value() const { return *value_; }
 
   ElementNodeType type() const override { return ElementNodeType::Return; }
@@ -190,6 +246,8 @@ class BreakNode : public ElementNode {
 
   virtual ~BreakNode(){};
 
+  virtual void accept(visitor& visitor) const override { visitor.visitBreak(*this); }
+
   ElementNodeType type() const override { return ElementNodeType::Break; }
 };
 
@@ -200,6 +258,8 @@ class FuncNode : public ElementNode {
       : name_(std::move(name)), args_(std::move(args)), body_(std::move(body)) {}
 
   virtual ~FuncNode() {}
+
+  virtual void accept(visitor& visitor) const override { visitor.visitFunc(*this); }
 
   IdentifierNode const& name() const { return *name_; }
 
@@ -222,6 +282,8 @@ class LambdaNode : public ElementNode {
 
   virtual ~LambdaNode(){};
 
+  virtual void accept(visitor& visitor) const override { visitor.visitLambda(*this); }
+
   std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
 
   ElementNode const& body() const { return *body_; }
@@ -239,6 +301,8 @@ class ProgNode : public ElementNode {
       : args_(std::move(args)), body_(std::move(body)) {}
 
   virtual ~ProgNode(){};
+
+  virtual void accept(visitor& visitor) const override { visitor.visitProg(*this); }
 
   std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
 
@@ -258,6 +322,8 @@ class CondNode : public ElementNode {
       : condition_(std::move(condition)), then_branch_(std::move(then_branch)), else_branch_(std::move(else_branch)) {}
 
   virtual ~CondNode(){};
+
+  virtual void accept(visitor& visitor) const override { visitor.visitCond(*this); }
 
   ElementNode const& condition() const { return *condition_; }
 
@@ -286,6 +352,8 @@ class ProgramNode {
   ProgramNode(std::vector<std::unique_ptr<ElementNode>> elements) : elements_(std::move(elements)) {}
 
   ~ProgramNode() {}
+
+  void accept(visitor& visitor) const { visitor.visitProgram(*this); }
 
   std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
 

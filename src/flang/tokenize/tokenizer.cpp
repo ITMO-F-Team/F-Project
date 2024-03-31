@@ -1,5 +1,7 @@
-#include <sstream>
 #include "flang/tokenize/tokenizer.hpp"
+
+#include <sstream>
+
 #include "flang/flang_exception.hpp"
 
 namespace flang {

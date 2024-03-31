@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <flang/eval/eval.hpp>
 #include <flang/parse/ast.hpp>
 #include <flang/parse/parser.hpp>
 #include <fstream>
@@ -38,6 +39,8 @@ int main(int argc, char* argv[]) {
     if (prog) {
       std::cout << *prog << '\n';
     }
+    std::cout << "== EVAL ==\n";
+    flang::eval(std::move(prog));
   } catch (flang::flang_exception const& e) {
     std::cerr << "\nERROR: " << e.what();
     return 1;
