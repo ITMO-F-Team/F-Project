@@ -45,6 +45,7 @@ class EvalVisitor : public visitor {
  private:
   Value _result;
   std::map<std::string, Value> _variables;
+  NullValue _null_singleton;
 
   void setBuiltinValues();
 
