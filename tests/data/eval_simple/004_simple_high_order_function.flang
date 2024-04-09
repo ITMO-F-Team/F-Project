@@ -1,0 +1,9 @@
+(func mycall (f) (
+    (f)
+))
+
+(func helloworld () (
+    (println 123)
+))
+
+(mycall helloworld)

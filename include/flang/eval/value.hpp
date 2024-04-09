@@ -4,6 +4,7 @@
 #include <functional>
 #include <list>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -15,8 +16,9 @@ class IntegerValue;
 class BuiltinFuncValue;
 class BoolValue;
 class ListValue;
+class UserFuncValue;
 
-using Value = std::variant<NullValue, IntegerValue, BuiltinFuncValue, BoolValue, ListValue>;
+using Value = std::variant<NullValue, IntegerValue, BuiltinFuncValue, BoolValue, ListValue, UserFuncValue>;
 
 // TODO: probably should be a singleton
 class NullValue {
@@ -55,15 +57,35 @@ class ListValue {
   std::shared_ptr<std::list<Value>> _value;
 };
 
+class UserFuncValue {
+ public:
+  explicit UserFuncValue(std::string name, FuncFormalArgs args, FuncBody body)
+      : _name(name), _args(args), _body(body) {}
+
+  // TODO: ^^^ does it copy the body?
+
+  std::string name() const { return _name; }
+
+  FuncFormalArgs args() const { return _args; }
+
+  FuncBody body() const { return _body; }
+
+ private:
+  std::string _name;
+  FuncFormalArgs _args;
+  FuncBody _body;
+};
+
 using BuiltinFuncImpl = std::function<Value(std::vector<Value> args)>;
 
 class BuiltinFuncValue {
  public:
-  explicit BuiltinFuncValue(BuiltinFuncImpl impl) : _impl(impl) {}
+  explicit BuiltinFuncValue(std::string name, BuiltinFuncImpl impl) : _name(name), _impl(impl) {}
 
-  Value call(std::vector<Value> args) { return _impl(args); }
+  Value call(std::vector<Value> args) const { return _impl(args); }
 
  private:
+  std::string _name;
   BuiltinFuncImpl _impl;
 };
 

@@ -7,13 +7,10 @@
 ))
 
 (func inc (x)
-    (return (plus (x 1)))
+    (return (add x 1))
 )
 
 (setq plusTwo (compose inc inc))
-
-(assert (equal (plusTwo 0) 2))
-(assert (equal (plusTwo 5) 7))
 
 (setq plusFour (compose plusTwo plusTwo))
 

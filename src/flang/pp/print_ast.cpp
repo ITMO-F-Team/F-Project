@@ -102,7 +102,7 @@ void print_lambda(LambdaNode const& node, json& output) {
     print_element(*arg, arg_output);
     lambda_output["lambda"]["args"].push_back(arg_output);
   }
-  print_element(node.body(), lambda_output["lambda"]["body"]);
+  print_element(*node.body(), lambda_output["lambda"]["body"]);
   output.push_back(lambda_output);
 }
 
@@ -122,7 +122,7 @@ void print_func(FuncNode const& node, json& output) {
     print_element(*arg, arg_output);
     func_output["func"]["args"].push_back(arg_output);
   }
-  print_element(node.body(), func_output["func"]["body"]);
+  print_element(*node.body(), func_output["func"]["body"]);
   output.push_back(func_output);
 }
 

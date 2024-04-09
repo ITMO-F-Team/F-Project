@@ -25,6 +25,35 @@ Value and_impl(std::vector<Value> args) {
   return BoolValue(b1.value() && b2.value());
 }
 
+Value not_impl(std::vector<Value> args) {
+  auto b = std::get<BoolValue>(args[0]);
+  return BoolValue(!b.value());
+}
+
+bool equal_internal_impl(std::vector<Value> args) {
+  auto left = args[0];
+  auto right = args[1];
+  if (const auto* left_i = std::get_if<IntegerValue>(&left)) {
+    if (const auto* right_i = std::get_if<IntegerValue>(&right)) {
+      return left_i->value() == right_i->value();
+    } else {
+      return false;
+    }
+  } else if (const auto* left_b = std::get_if<BoolValue>(&left)) {
+    if (const auto* right_b = std::get_if<BoolValue>(&right)) {
+      return left_b->value() == right_b->value();
+    } else {
+      return false;
+    }
+  } else {
+    throw not_implemented_exception("");
+  }
+}
+
+Value equal_impl(std::vector<Value> args) { return BoolValue(equal_internal_impl(args)); }
+
+Value nonequal_impl(std::vector<Value> args) { return BoolValue(!equal_internal_impl(args)); }
+
 // ----- IO -----
 
 Value println_impl(std::vector<Value> args) {
@@ -50,12 +79,15 @@ std::vector<Builtin> getAllBuiltins() {
   result.emplace_back(std::string("false"), BoolValue(false));
 
   // --- Functions ---
-  result.emplace_back(std::string("add"), BuiltinFuncValue(add_impl));
-  result.emplace_back(std::string("and"), BuiltinFuncValue(and_impl));
+  result.emplace_back(std::string("add"), BuiltinFuncValue("add", add_impl));
+  result.emplace_back(std::string("and"), BuiltinFuncValue("and", and_impl));
+  result.emplace_back(std::string("not"), BuiltinFuncValue("not", not_impl));
+  result.emplace_back(std::string("equal"), BuiltinFuncValue("equal", equal_impl));
+  result.emplace_back(std::string("nonequal"), BuiltinFuncValue("nonequal", nonequal_impl));
 
-  result.emplace_back(std::string("print"), BuiltinFuncValue(println_impl));
-  result.emplace_back(std::string("println"), BuiltinFuncValue(println_impl));
-  result.emplace_back(std::string("assert"), BuiltinFuncValue(assert_impl));
+  result.emplace_back(std::string("print"), BuiltinFuncValue("print", println_impl));
+  result.emplace_back(std::string("println"), BuiltinFuncValue("println", println_impl));
+  result.emplace_back(std::string("assert"), BuiltinFuncValue("assert", assert_impl));
 
   return result;
 }

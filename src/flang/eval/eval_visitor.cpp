@@ -6,18 +6,19 @@
 #include <flang/flang_exception.hpp>
 #include <flang/parse/ast.hpp>
 #include <functional>
+#include <iostream>
 #include <list>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <type_traits>
+#include <variant>
 #include <vector>
 
 #include "builtins.hpp"
 
 namespace flang {
-
-void todo(std::string const& e_msg = "") { throw not_implemented_exception(e_msg); }
 
 Value EvalVisitor::visitElement(const ElementNode& node) {
   node.accept(*this);
@@ -25,6 +26,11 @@ Value EvalVisitor::visitElement(const ElementNode& node) {
 }
 
 Value EvalVisitor::visitElement(const std::unique_ptr<ElementNode>& node) {
+  node->accept(*this);
+  return _result;
+}
+
+Value EvalVisitor::visitElement(const std::shared_ptr<ElementNode>& node) {
   node->accept(*this);
   return _result;
 }
@@ -37,7 +43,7 @@ void EvalVisitor::visitIdentifier(IdentifierNode const& node) {
 
 void EvalVisitor::visitIntegerLiteral(IntegerLiteralNode const& node) { _result = IntegerValue(node.value()); }
 
-void EvalVisitor::visitRealLiteral(RealLiteralNode const& node) { todo(); }
+void EvalVisitor::visitRealLiteral(RealLiteralNode const& node) { throw not_implemented_exception(""); }
 
 void EvalVisitor::visitPureList(PureListNode const& node) {
   std::list<Value> elements;
@@ -47,20 +53,48 @@ void EvalVisitor::visitPureList(PureListNode const& node) {
   _result = ListValue(elements);
 }
 
+void EvalVisitor::callUserFunc(UserFuncValue user_func, std::vector<Value> args) {
+  std::cout << "Calling " << user_func.name() << std::endl;
+
+  auto formal_args = user_func.args();
+  if (args.size() != formal_args.size()) {
+    throw runtime_exception("Invalid number of arguments");
+  }
+  // Assign values to formal arguments
+  for (int i = 0; i < args.size(); i++) {
+    auto name = formal_args.at(i)->name();
+    this->storeVariable(name, args[i]);
+  }
+  // Eval body
+  auto body = user_func.body();
+  try {
+    this->visitElement(body);
+    // If function does not return, we return `null`
+    _result = _null_singleton;
+  } catch (flang::return_control_flow_exception const& e) {
+    // Here we do nothing hehe.
+  }
+}
+
 void EvalVisitor::visitCall(CallNode const& node) {
   // Eval callee
-  // TODO: this will crash any moment
-  auto fn = std::get<BuiltinFuncValue>(this->visitElement(node.callee()));
+  auto fn = this->visitElement(node.callee());
   // Eval args
   std::vector<Value> args;
   for (auto& arg_expr : node.args()) {
     args.emplace_back(this->visitElement(arg_expr));
   }
-  // Call
-  _result = fn.call(args);
+  // Eval call
+  if (const auto* f = std::get_if<UserFuncValue>(&fn)) {
+    callUserFunc(*f, args);
+  } else if (const auto* f = std::get_if<BuiltinFuncValue>(&fn)) {
+    _result = f->call(args);
+  } else {
+    throw runtime_exception("You can only call callables");
+  }
 }
 
-void EvalVisitor::visitQuote(QuoteNode const& node) { todo(); }
+void EvalVisitor::visitQuote(QuoteNode const& node) { throw not_implemented_exception(""); }
 
 void EvalVisitor::visitSetq(SetqNode const& node) {
   auto name = node.name().name();
@@ -71,18 +105,45 @@ void EvalVisitor::visitSetq(SetqNode const& node) {
 void EvalVisitor::visitWhile(WhileNode const& node) {
   auto cond_value = this->visitElement(node.condition());
   while (std::get<BoolValue>(cond_value).value()) {
-    this->visitElement(node.body());
+    try {
+      this->visitElement(node.body());
+    } catch (flang::break_control_flow_exception const& e) {
+      break;
+    }
   }
   _result = _null_singleton;
 }
 
-void EvalVisitor::visitReturn(ReturnNode const& node) { todo(); }
+void EvalVisitor::visitReturn(ReturnNode const& node) {
+  _result = visitElement(node.value());
+  throw return_control_flow_exception();
+}
 
-void EvalVisitor::visitBreak(BreakNode const& node) { todo(); }
+void EvalVisitor::visitBreak(BreakNode const& node) { throw break_control_flow_exception(); }
 
-void EvalVisitor::visitFunc(FuncNode const& node) { todo(); }
+void EvalVisitor::visitFunc(FuncNode const& node) {
+  auto name = node.name().name();
+  auto f = UserFuncValue(name, node.args(), node.body());
+  storeVariable(name, f);
+}
 
-void EvalVisitor::visitLambda(LambdaNode const& node) { todo(); }
+std::string lambdaName(LambdaNode const& node) {
+  std::string result = "";
+  for (auto arg : node.args()) {
+    auto arg_name = arg->name();
+    if (!result.empty()) {
+      result += ", ";
+    }
+    result += arg_name;
+  }
+  return "<lambda (" + result + ") ...>";
+}
+
+void EvalVisitor::visitLambda(LambdaNode const& node) {
+  auto name = lambdaName(node);
+  auto f = UserFuncValue(name, node.args(), node.body());
+  _result = f;
+}
 
 void EvalVisitor::visitProg(ProgNode const& node) { this->visitElement(node.body()); }
 
@@ -100,8 +161,14 @@ void EvalVisitor::visitCond(CondNode const& node) {
 }
 
 void EvalVisitor::visitProgram(ProgramNode const& node) {
-  for (auto& el : node.elements()) {
-    this->visitElement(el);
+  try {
+    for (auto& el : node.elements()) {
+      this->visitElement(el);
+    }
+  } catch (flang::return_control_flow_exception const& e) {
+    runtimeError("Out-of-function return");
+  } catch (flang::break_control_flow_exception const& e) {
+    runtimeError("Out-of-loop break");
   }
 }
 
@@ -111,7 +178,7 @@ void EvalVisitor::setBuiltinValues() {
   }
 }
 
-Value EvalVisitor::loadVariable(std::string& varname) {
+Value EvalVisitor::loadVariable(std::string const& varname) {
   if (_variables.contains(varname)) {
     return _variables.at(varname);
   } else {

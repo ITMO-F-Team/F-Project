@@ -30,4 +30,16 @@ class runtime_exception : public flang_exception {
   explicit runtime_exception(std::string const& e_msg) : flang_exception(e_msg) {}
 };
 
+// ----- Control Flow Exceptions -----
+
+class return_control_flow_exception : public std::runtime_error {
+ public:
+  explicit return_control_flow_exception() : std::runtime_error("") {}
+};
+
+class break_control_flow_exception : public std::runtime_error {
+ public:
+  explicit break_control_flow_exception() : std::runtime_error("") {}
+};
+
 }  // namespace flang

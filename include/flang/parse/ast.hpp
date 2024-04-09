@@ -132,23 +132,23 @@ class RealLiteralNode : public AtomNode {
 
 class PureListNode : public ElementNode {
  public:
-  PureListNode(std::vector<std::unique_ptr<ElementNode>> elements) : elements_(std::move(elements)) {}
+  PureListNode(std::vector<std::shared_ptr<ElementNode>> elements) : elements_(std::move(elements)) {}
 
   virtual ~PureListNode() {}
 
   virtual void accept(visitor& visitor) const override { visitor.visitPureList(*this); }
 
-  std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
+  std::vector<std::shared_ptr<ElementNode>> const& elements() const { return elements_; }
 
   ElementNodeType type() const override { return ElementNodeType::PureList; }
 
  private:
-  std::vector<std::unique_ptr<ElementNode>> elements_;
+  std::vector<std::shared_ptr<ElementNode>> elements_;
 };
 
 class CallNode : public ElementNode {
  public:
-  CallNode(std::unique_ptr<IdentifierNode> callee, std::vector<std::unique_ptr<ElementNode>> args)
+  CallNode(std::shared_ptr<IdentifierNode> callee, std::vector<std::shared_ptr<ElementNode>> args)
       : callee_(std::move(callee)), args_(std::move(args)) {}
 
   virtual ~CallNode() {}
@@ -157,20 +157,20 @@ class CallNode : public ElementNode {
 
   IdentifierNode const& callee() const { return *callee_; }
 
-  std::vector<std::unique_ptr<ElementNode>> const& args() const { return args_; }
+  std::vector<std::shared_ptr<ElementNode>> const& args() const { return args_; }
 
   ElementNodeType type() const override { return ElementNodeType::Call; }
 
  private:
-  std::unique_ptr<IdentifierNode> callee_;
-  std::vector<std::unique_ptr<ElementNode>> args_;
+  std::shared_ptr<IdentifierNode> callee_;
+  std::vector<std::shared_ptr<ElementNode>> args_;
 };
 
 // --- Builtins ---
 
 class QuoteNode : public ElementNode {
  public:
-  QuoteNode(std::unique_ptr<ElementNode> arg) : arg_(std::move(arg)) {}
+  QuoteNode(std::shared_ptr<ElementNode> arg) : arg_(std::move(arg)) {}
 
   virtual ~QuoteNode() {}
 
@@ -181,12 +181,12 @@ class QuoteNode : public ElementNode {
   ElementNodeType type() const override { return ElementNodeType::Quote; }
 
  private:
-  std::unique_ptr<ElementNode> arg_;
+  std::shared_ptr<ElementNode> arg_;
 };
 
 class SetqNode : public ElementNode {
  public:
-  SetqNode(std::unique_ptr<IdentifierNode> name, std::unique_ptr<ElementNode> value)
+  SetqNode(std::shared_ptr<IdentifierNode> name, std::shared_ptr<ElementNode> value)
       : name_(std::move(name)), value_(std::move(value)) {}
 
   virtual ~SetqNode() {}
@@ -200,13 +200,13 @@ class SetqNode : public ElementNode {
   ElementNodeType type() const override { return ElementNodeType::Setq; }
 
  private:
-  std::unique_ptr<IdentifierNode> name_;
-  std::unique_ptr<ElementNode> value_;
+  std::shared_ptr<IdentifierNode> name_;
+  std::shared_ptr<ElementNode> value_;
 };
 
 class WhileNode : public ElementNode {
  public:
-  WhileNode(std::unique_ptr<ElementNode> condition, std::unique_ptr<ElementNode> body)
+  WhileNode(std::shared_ptr<ElementNode> condition, std::shared_ptr<ElementNode> body)
       : condition_(std::move(condition)), body_(std::move(body)) {}
 
   virtual ~WhileNode(){};
@@ -220,13 +220,13 @@ class WhileNode : public ElementNode {
   ElementNodeType type() const override { return ElementNodeType::While; }
 
  private:
-  std::unique_ptr<ElementNode> condition_;
-  std::unique_ptr<ElementNode> body_;
+  std::shared_ptr<ElementNode> condition_;
+  std::shared_ptr<ElementNode> body_;
 };
 
 class ReturnNode : public ElementNode {
  public:
-  explicit ReturnNode(std::unique_ptr<ElementNode> value) : value_(std::move(value)) {}
+  explicit ReturnNode(std::shared_ptr<ElementNode> value) : value_(std::move(value)) {}
 
   virtual ~ReturnNode(){};
 
@@ -237,7 +237,7 @@ class ReturnNode : public ElementNode {
   ElementNodeType type() const override { return ElementNodeType::Return; }
 
  private:
-  std::unique_ptr<ElementNode> value_;
+  std::shared_ptr<ElementNode> value_;
 };
 
 class BreakNode : public ElementNode {
@@ -251,10 +251,12 @@ class BreakNode : public ElementNode {
   ElementNodeType type() const override { return ElementNodeType::Break; }
 };
 
+using FuncFormalArgs = std::vector<std::shared_ptr<IdentifierNode>>;
+using FuncBody = std::shared_ptr<ElementNode>;
+
 class FuncNode : public ElementNode {
  public:
-  FuncNode(std::unique_ptr<IdentifierNode> name, std::vector<std::unique_ptr<IdentifierNode>> args,
-           std::unique_ptr<ElementNode> body)
+  FuncNode(std::shared_ptr<IdentifierNode> name, FuncFormalArgs args, FuncBody body)
       : name_(std::move(name)), args_(std::move(args)), body_(std::move(body)) {}
 
   virtual ~FuncNode() {}
@@ -263,62 +265,61 @@ class FuncNode : public ElementNode {
 
   IdentifierNode const& name() const { return *name_; }
 
-  std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
+  FuncFormalArgs args() const { return args_; }
 
-  ElementNode const& body() const { return *body_; }
+  FuncBody body() const { return body_; }
 
   ElementNodeType type() const override { return ElementNodeType::Func; }
 
  private:
-  std::unique_ptr<IdentifierNode> name_;
-  std::vector<std::unique_ptr<IdentifierNode>> args_;
-  std::unique_ptr<ElementNode> body_;
+  std::shared_ptr<IdentifierNode> name_;
+  FuncFormalArgs args_;
+  FuncBody body_;
 };
 
 class LambdaNode : public ElementNode {
  public:
-  LambdaNode(std::vector<std::unique_ptr<IdentifierNode>> args, std::unique_ptr<ElementNode> body)
-      : args_(std::move(args)), body_(std::move(body)) {}
+  LambdaNode(FuncFormalArgs args, FuncBody body) : args_(std::move(args)), body_(std::move(body)) {}
 
   virtual ~LambdaNode(){};
 
   virtual void accept(visitor& visitor) const override { visitor.visitLambda(*this); }
 
-  std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
+  FuncFormalArgs args() const { return args_; }
 
-  ElementNode const& body() const { return *body_; }
+  FuncBody body() const { return body_; }
 
   ElementNodeType type() const override { return ElementNodeType::Lambda; }
 
  private:
-  std::vector<std::unique_ptr<IdentifierNode>> args_;
-  std::unique_ptr<ElementNode> body_;
+  FuncFormalArgs args_;
+  FuncBody body_;
 };
 
 class ProgNode : public ElementNode {
  public:
-  ProgNode(std::vector<std::unique_ptr<IdentifierNode>> args, std::unique_ptr<ElementNode> body)
+  ProgNode(std::vector<std::shared_ptr<IdentifierNode>> args, std::shared_ptr<ElementNode> body)
       : args_(std::move(args)), body_(std::move(body)) {}
 
   virtual ~ProgNode(){};
 
   virtual void accept(visitor& visitor) const override { visitor.visitProg(*this); }
 
-  std::vector<std::unique_ptr<IdentifierNode>> const& args() const { return args_; }
+  std::vector<std::shared_ptr<IdentifierNode>> const& args() const { return args_; }
 
   ElementNode const& body() const { return *body_; }
 
   ElementNodeType type() const override { return ElementNodeType::Prog; }
 
  private:
-  std::vector<std::unique_ptr<IdentifierNode>> args_;
-  std::unique_ptr<ElementNode> body_;
+  std::vector<std::shared_ptr<IdentifierNode>> args_;
+  std::shared_ptr<ElementNode> body_;
 };
 
 class CondNode : public ElementNode {
  public:
-  CondNode(std::unique_ptr<ElementNode> condition, std::unique_ptr<ElementNode> then_branch,
-           std::unique_ptr<ElementNode> else_branch = nullptr)
+  CondNode(std::shared_ptr<ElementNode> condition, std::shared_ptr<ElementNode> then_branch,
+           std::shared_ptr<ElementNode> else_branch = nullptr)
       : condition_(std::move(condition)), then_branch_(std::move(then_branch)), else_branch_(std::move(else_branch)) {}
 
   virtual ~CondNode(){};
@@ -340,25 +341,25 @@ class CondNode : public ElementNode {
   ElementNodeType type() const override { return ElementNodeType::Cond; }
 
  private:
-  std::unique_ptr<ElementNode> condition_;
-  std::unique_ptr<ElementNode> then_branch_;
-  std::unique_ptr<ElementNode> else_branch_;
+  std::shared_ptr<ElementNode> condition_;
+  std::shared_ptr<ElementNode> then_branch_;
+  std::shared_ptr<ElementNode> else_branch_;
 };
 
 // ===== Program =====
 
 class ProgramNode {
  public:
-  ProgramNode(std::vector<std::unique_ptr<ElementNode>> elements) : elements_(std::move(elements)) {}
+  ProgramNode(std::vector<std::shared_ptr<ElementNode>> elements) : elements_(std::move(elements)) {}
 
   ~ProgramNode() {}
 
   void accept(visitor& visitor) const { visitor.visitProgram(*this); }
 
-  std::vector<std::unique_ptr<ElementNode>> const& elements() const { return elements_; }
+  std::vector<std::shared_ptr<ElementNode>> const& elements() const { return elements_; }
 
  private:
-  std::vector<std::unique_ptr<ElementNode>> elements_;
+  std::vector<std::shared_ptr<ElementNode>> elements_;
 };
 
 }  // namespace flang

@@ -7,6 +7,6 @@
 
 namespace flang {
 
-std::unique_ptr<ProgramNode> parse(std::vector<Token>& tokens);
+std::shared_ptr<ProgramNode> parse(std::vector<Token>& tokens);
 
 }

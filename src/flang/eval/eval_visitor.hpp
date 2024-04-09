@@ -1,6 +1,7 @@
 #include <flang/eval/value.hpp>
 #include <flang/parse/ast.hpp>
 #include <map>
+#include <memory>
 
 namespace flang {
 
@@ -11,6 +12,8 @@ class EvalVisitor : public visitor {
   Value visitElement(ElementNode const& node);
 
   Value visitElement(const std::unique_ptr<ElementNode>& node);
+
+  Value visitElement(const std::shared_ptr<ElementNode>& node);
 
   virtual void visitIdentifier(IdentifierNode const& node);
 
@@ -47,9 +50,11 @@ class EvalVisitor : public visitor {
   std::map<std::string, Value> _variables;
   NullValue _null_singleton;
 
+  void callUserFunc(UserFuncValue user_func, std::vector<Value> args);
+
   void setBuiltinValues();
 
-  Value loadVariable(std::string& varname);
+  Value loadVariable(std::string const& varname);
 
   void storeVariable(std::string& varname, Value value);
 

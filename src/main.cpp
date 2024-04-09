@@ -34,13 +34,13 @@ int main(int argc, char* argv[]) {
     std::copy(tokens.begin(), tokens.end(), std::ostream_iterator<flang::Token>(std::cout, " "));
     std::cout << "\n\n";
 
-    std::unique_ptr<flang::ProgramNode> prog = flang::parse(tokens);
+    std::shared_ptr<flang::ProgramNode> prog = flang::parse(tokens);
     std::cout << "== AST ==\n";
     if (prog) {
       std::cout << *prog << '\n';
     }
     std::cout << "== EVAL ==\n";
-    flang::eval(std::move(prog));
+    flang::eval(prog);
   } catch (flang::flang_exception const& e) {
     std::cerr << "\nERROR: " << e.what();
     return 1;

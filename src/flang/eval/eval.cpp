@@ -5,7 +5,7 @@
 
 namespace flang {
 
-void eval(std::unique_ptr<ProgramNode> node) {
+void eval(std::shared_ptr<ProgramNode> node) {
   auto v = EvalVisitor();
   node->accept(v);
 }

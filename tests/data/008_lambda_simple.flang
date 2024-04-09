@@ -1,6 +1,5 @@
-(assert
-    (
-        (lambda (x) ((return x))) 42
-    )
+(setq f (lambda (x) ((return x))))
+(assert (equal
+    (f 42)
     42
-)
+))

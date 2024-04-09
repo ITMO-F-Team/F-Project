@@ -33,8 +33,8 @@ Token ParserImpl::takeNext() {
   return token.value();
 }
 
-std::unique_ptr<ProgramNode> ParserImpl::parseProgram() {
-  std::vector<std::unique_ptr<ElementNode>> elements;
+std::shared_ptr<ProgramNode> ParserImpl::parseProgram() {
+  std::vector<std::shared_ptr<ElementNode>> elements;
   while (!atEOF()) {
     elements.emplace_back(parseElement());
   }
@@ -50,7 +50,7 @@ Token ParserImpl::eat(TokenType token_type) {
   return token;
 }
 
-std::unique_ptr<ElementNode> ParserImpl::parseElement() {
+std::shared_ptr<ElementNode> ParserImpl::parseElement() {
   auto token = peekNext();
   switch (token.type()) {
     case tkLPAREN:
@@ -68,14 +68,14 @@ std::unique_ptr<ElementNode> ParserImpl::parseElement() {
   }
 }
 
-std::unique_ptr<QuoteNode> ParserImpl::parseShortQuote() {
+std::shared_ptr<QuoteNode> ParserImpl::parseShortQuote() {
   eat(tkQUOTEMARK);
   auto arg = parseElement();
   return std::make_unique<QuoteNode>(std::move(arg));
 }
 
-std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
-  std::unique_ptr<ElementNode> list_like_node;
+std::shared_ptr<ElementNode> ParserImpl::parseListLikeElement() {
+  std::shared_ptr<ElementNode> list_like_node;
 
   eat(tkLPAREN);
   auto token = peekNext();
@@ -118,8 +118,8 @@ std::unique_ptr<ElementNode> ParserImpl::parseListLikeElement() {
   return list_like_node;
 }
 
-std::unique_ptr<PureListNode> ParserImpl::parseList() {
-  std::vector<std::unique_ptr<ElementNode>> elements;
+std::shared_ptr<PureListNode> ParserImpl::parseList() {
+  std::vector<std::shared_ptr<ElementNode>> elements;
 
   for (auto tok = peekNext(); tok.type() != tkRPAREN; tok = peekNext()) {
     elements.emplace_back(parseElement());
@@ -128,13 +128,13 @@ std::unique_ptr<PureListNode> ParserImpl::parseList() {
   return std::make_unique<PureListNode>(std::move(elements));
 }
 
-std::unique_ptr<QuoteNode> ParserImpl::parseListLikeQuote() {
+std::shared_ptr<QuoteNode> ParserImpl::parseListLikeQuote() {
   eat(tkQUOTE);
   return std::make_unique<QuoteNode>(parseElement());
 }
 
-std::unique_ptr<CallNode> ParserImpl::parseListLikeCall() {
-  std::vector<std::unique_ptr<ElementNode>> args;
+std::shared_ptr<CallNode> ParserImpl::parseListLikeCall() {
+  std::vector<std::shared_ptr<ElementNode>> args;
 
   auto callee = eat(tkIDENTIFIER);
 
@@ -144,47 +144,47 @@ std::unique_ptr<CallNode> ParserImpl::parseListLikeCall() {
   return std::make_unique<CallNode>(std::make_unique<IdentifierNode>(callee.value()), std::move(args));
 }
 
-std::unique_ptr<SetqNode> ParserImpl::parseListLikeSetq() {
+std::shared_ptr<SetqNode> ParserImpl::parseListLikeSetq() {
   eat(tkSETQ);
   auto name = parseIdentifier();
   auto value = parseElement();
   return std::make_unique<SetqNode>(std::move(name), std::move(value));
 }
 
-std::unique_ptr<CondNode> ParserImpl::parseListLikeCond() {
+std::shared_ptr<CondNode> ParserImpl::parseListLikeCond() {
   eat(tkCOND);
   auto condition = parseElement();
   auto then_branch = parseElement();
-  std::unique_ptr<ElementNode> else_branch = nullptr;
+  std::shared_ptr<ElementNode> else_branch = nullptr;
   if (peekNext().type() != tkRPAREN) {
     else_branch = parseElement();
   }
   return std::make_unique<CondNode>(std::move(condition), std::move(then_branch), std::move(else_branch));
 }
 
-std::unique_ptr<WhileNode> ParserImpl::parseListLikeWhile() {
+std::shared_ptr<WhileNode> ParserImpl::parseListLikeWhile() {
   eat(tkWHILE);
   auto condition = parseElement();
   auto body = parseElement();
   return std::make_unique<WhileNode>(std::move(condition), std::move(body));
 }
 
-std::unique_ptr<ReturnNode> ParserImpl::parseListLikeReturn() {
+std::shared_ptr<ReturnNode> ParserImpl::parseListLikeReturn() {
   eat(tkRETURN);
   return std::make_unique<ReturnNode>(parseElement());
 }
 
-std::unique_ptr<BreakNode> ParserImpl::parseListLikeBreak() {
+std::shared_ptr<BreakNode> ParserImpl::parseListLikeBreak() {
   eat(tkBREAK);
   return std::make_unique<BreakNode>();
 }
 
-std::unique_ptr<IdentifierNode> ParserImpl::parseIdentifier() {
+std::shared_ptr<IdentifierNode> ParserImpl::parseIdentifier() {
   auto token_value = eat(tkIDENTIFIER).value();
   return std::make_unique<IdentifierNode>(token_value);
 }
 
-std::unique_ptr<FuncNode> ParserImpl::parseListLikeFunc() {
+std::shared_ptr<FuncNode> ParserImpl::parseListLikeFunc() {
   eat(tkFUNC);
   auto name = parseIdentifier();
   auto args = parseFuncArguments();
@@ -193,15 +193,15 @@ std::unique_ptr<FuncNode> ParserImpl::parseListLikeFunc() {
   return std::make_unique<FuncNode>(std::move(name), std::move(args), std::move(body));
 }
 
-std::unique_ptr<LambdaNode> ParserImpl::parseListLikeLambda() {
+std::shared_ptr<LambdaNode> ParserImpl::parseListLikeLambda() {
   eat(tkLAMBDA);
   auto args = parseFuncArguments();
   auto body = parseElement();
 
-  return std::make_unique<LambdaNode>(std::move(args), std::move(body));
+  return std::make_shared<LambdaNode>(std::move(args), std::move(body));
 }
 
-std::unique_ptr<ProgNode> ParserImpl::parseListLikeProg() {
+std::shared_ptr<ProgNode> ParserImpl::parseListLikeProg() {
   eat(tkPROG);
   auto args = parseFuncArguments();
   auto body = parseElement();
@@ -209,18 +209,18 @@ std::unique_ptr<ProgNode> ParserImpl::parseListLikeProg() {
   return std::make_unique<ProgNode>(std::move(args), std::move(body));
 }
 
-std::unique_ptr<IntegerLiteralNode> ParserImpl::parseIntegerLiteral() {
+std::shared_ptr<IntegerLiteralNode> ParserImpl::parseIntegerLiteral() {
   auto token_value = eat(tkINTEGER).value();
   return std::make_unique<IntegerLiteralNode>(std::stoi(token_value));
 }
 
-std::unique_ptr<RealLiteralNode> ParserImpl::parseRealLiteral() {
+std::shared_ptr<RealLiteralNode> ParserImpl::parseRealLiteral() {
   auto token_value = eat(tkREAL).value();
   return std::make_unique<RealLiteralNode>(std::stod(token_value));
 }
 
-std::vector<std::unique_ptr<IdentifierNode>> ParserImpl::parseFuncArguments() {
-  std::vector<std::unique_ptr<IdentifierNode>> args;
+std::vector<std::shared_ptr<IdentifierNode>> ParserImpl::parseFuncArguments() {
+  std::vector<std::shared_ptr<IdentifierNode>> args;
   eat(tkLPAREN);
   for (auto arg_ident = peekNext(); arg_ident.type() != tkRPAREN; arg_ident = peekNext()) {
     args.emplace_back(parseIdentifier());

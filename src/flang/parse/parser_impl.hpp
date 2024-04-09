@@ -11,7 +11,7 @@ class ParserImpl {
  public:
   explicit ParserImpl(std::vector<Token> const& tokens) : tokens_(tokens), next_index_(0) {}
 
-  std::unique_ptr<ProgramNode> parseProgram();
+  std::shared_ptr<ProgramNode> parseProgram();
 
  private:
   std::vector<Token> tokens_;
@@ -40,27 +40,27 @@ class ParserImpl {
     | ShortQuote
     | ListLikeElement
   */
-  std::unique_ptr<ElementNode> parseElement();
+  std::shared_ptr<ElementNode> parseElement();
 
   /**
   Identifier := tkIDENTIFIER.
   */
-  std::unique_ptr<IdentifierNode> parseIdentifier();
+  std::shared_ptr<IdentifierNode> parseIdentifier();
 
   /**
   IntegerLiteral := tkINTEGER.
   */
-  std::unique_ptr<IntegerLiteralNode> parseIntegerLiteral();
+  std::shared_ptr<IntegerLiteralNode> parseIntegerLiteral();
 
   /**
   RealLiteral := tkREAL.
   */
-  std::unique_ptr<RealLiteralNode> parseRealLiteral();
+  std::shared_ptr<RealLiteralNode> parseRealLiteral();
 
   /**
   ShortQuote := ' Element.
   */
-  std::unique_ptr<QuoteNode> parseShortQuote();
+  std::shared_ptr<QuoteNode> parseShortQuote();
 
   /**
   ListLikeElement := ( ListLikeElementBody ).
@@ -77,42 +77,42 @@ class ParserImpl {
     | Return
     | Break
   */
-  std::unique_ptr<ElementNode> parseListLikeElement();
+  std::shared_ptr<ElementNode> parseListLikeElement();
 
   /**
   List := Element* .
   */
-  std::unique_ptr<PureListNode> parseList();
+  std::shared_ptr<PureListNode> parseList();
 
   /**
   Call := Ident Element* .
   */
-  std::unique_ptr<CallNode> parseListLikeCall();
+  std::shared_ptr<CallNode> parseListLikeCall();
 
   /**
   Quote := quote Element .
   */
-  std::unique_ptr<QuoteNode> parseListLikeQuote();
+  std::shared_ptr<QuoteNode> parseListLikeQuote();
 
   /**
   Setq := setq Ident Element .
   */
-  std::unique_ptr<SetqNode> parseListLikeSetq();
+  std::shared_ptr<SetqNode> parseListLikeSetq();
 
-  std::unique_ptr<FuncNode> parseListLikeFunc();
+  std::shared_ptr<FuncNode> parseListLikeFunc();
 
-  std::unique_ptr<LambdaNode> parseListLikeLambda();
+  std::shared_ptr<LambdaNode> parseListLikeLambda();
 
-  std::unique_ptr<ProgNode> parseListLikeProg();
+  std::shared_ptr<ProgNode> parseListLikeProg();
 
-  std::unique_ptr<CondNode> parseListLikeCond();
+  std::shared_ptr<CondNode> parseListLikeCond();
 
-  std::unique_ptr<WhileNode> parseListLikeWhile();
+  std::shared_ptr<WhileNode> parseListLikeWhile();
 
-  std::unique_ptr<ReturnNode> parseListLikeReturn();
+  std::shared_ptr<ReturnNode> parseListLikeReturn();
 
-  std::unique_ptr<BreakNode> parseListLikeBreak();
+  std::shared_ptr<BreakNode> parseListLikeBreak();
 
-  std::vector<std::unique_ptr<IdentifierNode>> parseFuncArguments();
+  std::vector<std::shared_ptr<IdentifierNode>> parseFuncArguments();
 };
 }  // namespace flang
