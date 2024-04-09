@@ -1,7 +1,5 @@
 #include "eval_visitor.hpp"
 
-#include <__utility/pair.h>
-
 #include <flang/eval/value.hpp>
 #include <flang/flang_exception.hpp>
 #include <flang/parse/ast.hpp>
@@ -17,6 +15,7 @@
 #include <vector>
 
 #include "builtins.hpp"
+#include "environment_stack.h"
 
 namespace flang {
 
@@ -37,8 +36,12 @@ Value EvalVisitor::visitElement(const std::shared_ptr<ElementNode>& node) {
 
 void EvalVisitor::visitIdentifier(IdentifierNode const& node) {
   auto name = node.name();
-  auto result = this->loadVariable(name);
-  _result = result;
+  auto result = environment_stack_.loadVariable(name);
+  if (result.has_value()) {
+    _result = result.value();
+  } else {
+    throw runtime_exception("Variable '" + name + "' is not defined");
+  }
 }
 
 void EvalVisitor::visitIntegerLiteral(IntegerLiteralNode const& node) { _result = IntegerValue(node.value()); }
@@ -61,23 +64,20 @@ void EvalVisitor::callUserFunc(UserFuncValue user_func, std::vector<Value> args)
   // Assign values to formal arguments
   for (int i = 0; i < args.size(); i++) {
     auto name = formal_args.at(i)->name();
-    this->storeVariable(name, args[i]);
+    environment_stack_.storeVariable(name, args[i]);
   }
   // Eval body
   auto body = user_func.body();
   try {
-    this->visitElement(body);
-    // If function does not return, we return `null`
-    _result = _null_singleton;
+    _result = this->visitElement(body);
   } catch (flang::return_control_flow_exception const& e) {
     // Here we do nothing hehe.
   }
 }
 
 void EvalVisitor::call(Value callee, std::vector<Value> args) {
-  if (++cur_callstack_length_ > 100) {
-    throw flang_exception("Stack overflow!");
-  }
+  ScopedEnvironment env(environment_stack_);
+
   if (const auto* f = std::get_if<UserFuncValue>(&callee)) {
     callUserFunc(*f, args);
   } else if (const auto* f = std::get_if<BuiltinFuncValue>(&callee)) {
@@ -104,7 +104,7 @@ void EvalVisitor::visitQuote(QuoteNode const& node) { throw not_implemented_exce
 void EvalVisitor::visitSetq(SetqNode const& node) {
   auto name = node.name().name();
   auto value = this->visitElement(node.value());
-  this->storeVariable(name, value);
+  environment_stack_.storeVariable(name, value);
 }
 
 void EvalVisitor::visitWhile(WhileNode const& node) {
@@ -129,7 +129,7 @@ void EvalVisitor::visitBreak(BreakNode const& node) { throw break_control_flow_e
 void EvalVisitor::visitFunc(FuncNode const& node) {
   auto name = node.name().name();
   auto f = UserFuncValue(name, node.args(), node.body());
-  storeVariable(name, f);
+  environment_stack_.storeVariable(name, f);
 }
 
 std::string lambdaName(LambdaNode const& node) {
@@ -179,20 +179,9 @@ void EvalVisitor::visitProgram(ProgramNode const& node) {
 
 void EvalVisitor::setBuiltinValues() {
   for (auto builtin : getAllBuiltins()) {
-    storeVariable(builtin.name, builtin.value);
+    environment_stack_.storeVariable(builtin.name, builtin.value);
   }
 }
-
-Value EvalVisitor::loadVariable(std::string const& varname) {
-  if (_variables.contains(varname)) {
-    return _variables.at(varname);
-  } else {
-    this->runtimeError("Variable '" + varname + "' is not defined");
-    return _null_singleton;  // TODO: unreachable
-  }
-}
-
-void EvalVisitor::storeVariable(std::string& varname, Value value) { _variables.insert_or_assign(varname, value); }
 
 void EvalVisitor::runtimeError(std::string msg) { throw runtime_exception(msg); }
 

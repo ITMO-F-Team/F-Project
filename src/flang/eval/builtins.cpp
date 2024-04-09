@@ -2,6 +2,7 @@
 
 #include <flang/eval/value.hpp>
 #include <flang/flang_exception.hpp>
+#include <functional>
 #include <iostream>
 #include <ostream>
 #include <string>
@@ -12,20 +13,57 @@ namespace flang {
 
 // ----- Binary Operators -----
 
-Value add_impl(std::vector<Value> args) {
-  // TODO: this will crash any moment
+// --- Integer binary operators ---
+
+template <auto Operator>
+Value int_binop_impl(std::vector<Value> args) {
   auto n1 = std::get<IntegerValue>(args[0]);
   auto n2 = std::get<IntegerValue>(args[1]);
-  return IntegerValue(n1.value() + n2.value());
+  auto result = Operator(n1.value(), n2.value());
+  return IntegerValue(result);
 }
 
-Value and_impl(std::vector<Value> args) {
+int add(int x, int y) { return x + y; }
+
+int minus(int x, int y) { return x - y; }
+
+int times(int x, int y) { return x * y; }
+
+int divide(int x, int y) { return x / y; }
+
+// --- Integer comparison operators ---
+
+template <auto Operator>
+Value int_comparison_binop_impl(std::vector<Value> args) {
+  auto n1 = std::get<IntegerValue>(args[0]);
+  auto n2 = std::get<IntegerValue>(args[1]);
+  auto result = Operator(n1.value(), n2.value());
+  return BoolValue(result);
+}
+
+bool less(int a, int b) { return a < b; }
+
+bool lesseq(int a, int b) { return a <= b; }
+
+bool greater(int a, int b) { return a > b; }
+
+bool greatereq(int a, int b) { return a >= b; }
+
+// --- Bolean binary operators ---
+
+template <auto Operator>
+Value bool_binop_impl(std::vector<Value> args) {
   auto b1 = std::get<BoolValue>(args[0]);
   auto b2 = std::get<BoolValue>(args[1]);
-  return BoolValue(b1.value() && b2.value());
+  auto result = Operator(b1.value(), b2.value());
+  return BoolValue(result);
 }
 
-Value not_impl(std::vector<Value> args) {
+bool bool_and(bool a, bool b) { return a && b; }
+
+bool bool_or(bool a, bool b) { return a || b; }
+
+Value bool_not_impl(std::vector<Value> args) {
   auto b = std::get<BoolValue>(args[0]);
   return BoolValue(!b.value());
 }
@@ -71,6 +109,10 @@ Value assert_impl(std::vector<Value> args) {
   }
 }
 
+void builtin_function(std::vector<Builtin>& builtins, std::string name, BuiltinFuncImpl impl) {
+  builtins.emplace_back(name, BuiltinFuncValue(name, impl));
+}
+
 std::vector<Builtin> getAllBuiltins() {
   std::vector<Builtin> result;
 
@@ -79,15 +121,26 @@ std::vector<Builtin> getAllBuiltins() {
   result.emplace_back(std::string("false"), BoolValue(false));
 
   // --- Functions ---
-  result.emplace_back(std::string("add"), BuiltinFuncValue("add", add_impl));
-  result.emplace_back(std::string("and"), BuiltinFuncValue("and", and_impl));
-  result.emplace_back(std::string("not"), BuiltinFuncValue("not", not_impl));
-  result.emplace_back(std::string("equal"), BuiltinFuncValue("equal", equal_impl));
-  result.emplace_back(std::string("nonequal"), BuiltinFuncValue("nonequal", nonequal_impl));
-
-  result.emplace_back(std::string("print"), BuiltinFuncValue("print", println_impl));
-  result.emplace_back(std::string("println"), BuiltinFuncValue("println", println_impl));
-  result.emplace_back(std::string("assert"), BuiltinFuncValue("assert", assert_impl));
+  // Integer binary operators
+  builtin_function(result, "plus", int_binop_impl<add>);
+  builtin_function(result, "minus", int_binop_impl<minus>);
+  builtin_function(result, "times", int_binop_impl<times>);
+  builtin_function(result, "divide", int_binop_impl<divide>);
+  // Boolean operators
+  builtin_function(result, "and", bool_binop_impl<bool_and>);
+  builtin_function(result, "or", bool_binop_impl<bool_or>);
+  builtin_function(result, "not", bool_not_impl);
+  // Comparison operators
+  builtin_function(result, "greater", int_comparison_binop_impl<greater>);
+  builtin_function(result, "greatereq", int_comparison_binop_impl<greatereq>);
+  builtin_function(result, "less", int_comparison_binop_impl<less>);
+  builtin_function(result, "lesseq", int_comparison_binop_impl<lesseq>);
+  builtin_function(result, "equal", equal_impl);
+  builtin_function(result, "nonequal", nonequal_impl);
+  // IO
+  builtin_function(result, "print", println_impl);
+  builtin_function(result, "printlnt", println_impl);
+  builtin_function(result, "assert", assert_impl);
 
   return result;
 }

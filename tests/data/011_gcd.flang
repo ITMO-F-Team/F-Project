@@ -1,14 +1,14 @@
 (func mod (dividend divisor)
   (cond (less dividend divisor)
-    dividend
-    (mod (minus dividend divisor) divisor)
+    (return dividend)
+    (return (mod (minus dividend divisor) divisor))
   )
 )
 
 (func gcd (x y)
   (cond (equal y 0)
-    x
-    (gcd y (mod x y))
+    (return x)
+    (return (gcd y (mod x y)))
   )
 )
 

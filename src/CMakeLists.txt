@@ -7,6 +7,7 @@ add_library(flang
         flang/parse/parser.cpp
         flang/eval/eval_visitor.cpp
         flang/eval/builtins.cpp
+        flang/eval/environment_stack.cpp
         flang/eval/eval.cpp
 )
 
