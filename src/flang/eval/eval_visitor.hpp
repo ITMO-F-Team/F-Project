@@ -46,9 +46,12 @@ class EvalVisitor : public visitor {
   virtual void visitProgram(ProgramNode const& node);
 
  private:
+  int cur_callstack_length_ = 0;
   Value _result;
   std::map<std::string, Value> _variables;
   NullValue _null_singleton;
+
+  void call(Value callee, std::vector<Value> args);
 
   void callUserFunc(UserFuncValue user_func, std::vector<Value> args);
 

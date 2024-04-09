@@ -54,8 +54,6 @@ void EvalVisitor::visitPureList(PureListNode const& node) {
 }
 
 void EvalVisitor::callUserFunc(UserFuncValue user_func, std::vector<Value> args) {
-  std::cout << "Calling " << user_func.name() << std::endl;
-
   auto formal_args = user_func.args();
   if (args.size() != formal_args.size()) {
     throw runtime_exception("Invalid number of arguments");
@@ -76,6 +74,19 @@ void EvalVisitor::callUserFunc(UserFuncValue user_func, std::vector<Value> args)
   }
 }
 
+void EvalVisitor::call(Value callee, std::vector<Value> args) {
+  if (++cur_callstack_length_ > 100) {
+    throw flang_exception("Stack overflow!");
+  }
+  if (const auto* f = std::get_if<UserFuncValue>(&callee)) {
+    callUserFunc(*f, args);
+  } else if (const auto* f = std::get_if<BuiltinFuncValue>(&callee)) {
+    _result = f->call(args);
+  } else {
+    throw runtime_exception("You can only call callables");
+  }
+}
+
 void EvalVisitor::visitCall(CallNode const& node) {
   // Eval callee
   auto fn = this->visitElement(node.callee());
@@ -85,13 +96,7 @@ void EvalVisitor::visitCall(CallNode const& node) {
     args.emplace_back(this->visitElement(arg_expr));
   }
   // Eval call
-  if (const auto* f = std::get_if<UserFuncValue>(&fn)) {
-    callUserFunc(*f, args);
-  } else if (const auto* f = std::get_if<BuiltinFuncValue>(&fn)) {
-    _result = f->call(args);
-  } else {
-    throw runtime_exception("You can only call callables");
-  }
+  call(fn, args);
 }
 
 void EvalVisitor::visitQuote(QuoteNode const& node) { throw not_implemented_exception(""); }
