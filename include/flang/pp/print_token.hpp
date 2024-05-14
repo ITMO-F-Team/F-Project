@@ -5,6 +5,7 @@
 
 #include "flang/tokenize/token.hpp"
 
-namespace flang {
+namespace flang
+{
 std::ostream& operator<<(std::ostream& os, Token const& token);
-}  // namespace flang
+} // namespace flang
