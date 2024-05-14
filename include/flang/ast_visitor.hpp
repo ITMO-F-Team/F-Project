@@ -14,6 +14,7 @@ class Real;
 class Boolean;
 class Null;
 class List;
+class Function;
 
 class Visitor
 {
@@ -24,6 +25,7 @@ public:
     virtual void visitBoolean(std::shared_ptr<Boolean> node)       = 0;
     virtual void visitNull(std::shared_ptr<Null> node)             = 0;
     virtual void visitList(std::shared_ptr<List> node)             = 0;
+    virtual void visitFunction(std::shared_ptr<Function> node)     = 0;
 };
 
 } // namespace flang

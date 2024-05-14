@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,6 +28,11 @@ using Program = std::vector<std::shared_ptr<Element>>;
 class Identifier : public Element, std::enable_shared_from_this<Identifier>
 {
 public:
+    static Identifier LambdaIdentifier()
+    {
+        return Identifier("LAMBDA");
+    }
+
     explicit Identifier(std::string name)
         : name_(std::move(name))
     {
@@ -131,7 +137,9 @@ class List final : public Element, std::enable_shared_from_this<List>
 {
 public:
     explicit List(std::vector<std::shared_ptr<Element>> elements)
-        : elements_(std::move(elements)){}
+        : elements_(std::move(elements))
+    {
+    }
 
     auto const& getElements() const
     {
@@ -145,6 +153,31 @@ public:
 
 private:
     std::vector<std::shared_ptr<Element>> elements_;
+};
+
+class Function final : public Element, std::enable_shared_from_this<Function>
+{
+public:
+    Function(std::shared_ptr<Identifier> identifier, std::function<void(Visitor&, std::vector<std::shared_ptr<Element>>)> impl)
+        : identifier_(std::move(identifier))
+        , impl_(impl)
+    {
+    }
+
+    template <class... Args>
+    void call(Args&&... args)
+    {
+        impl_(std::forward<Args>(args)...);
+    }
+
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitFunction(shared_from_this());
+    }
+
+private:
+    std::shared_ptr<Identifier> identifier_;
+    std::function<void(Visitor&, std::vector<std::shared_ptr<Element>>)> impl_;
 };
 
 } // namespace flang
