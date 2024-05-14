@@ -5,6 +5,7 @@ add_library(flang
         flang/tokenize/tokenizer.cpp
         flang/parse/parser_impl.cpp
         flang/parse/parser.cpp
+        flang/eval/environment_stack.cpp
 )
 
 target_include_directories(
