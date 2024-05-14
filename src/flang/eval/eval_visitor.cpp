@@ -2,5 +2,5 @@
 
 namespace flang
 {
-    
+
 } // namespace flang
