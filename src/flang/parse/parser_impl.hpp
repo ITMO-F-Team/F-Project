@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -31,88 +32,63 @@ class ParserImpl {
 
   Token eat(TokenType token_type);
 
-  // ----- Parsers for main non-terminals -----
+  // =====        Element Parsers         =====
+  // ==========================================
+
   /**
   Element :=
     | Identifier
-    | IntegerLiteral
-    | RealLiteral
-    | ShortQuote
-    | ListLikeElement
+    | List
+    | QuotedElement  <--- is desugared into List
+    | Literal
   */
-  std::unique_ptr<ElementNode> parseElement();
+  std::shared_ptr<Element> parseElement();
 
   /**
   Identifier := tkIDENTIFIER.
   */
-  std::unique_ptr<IdentifierNode> parseIdentifier();
+  std::shared_ptr<Identifier> parseIdentifier();
 
   /**
-  IntegerLiteral := tkINTEGER.
+  List := ( Element* ) .
   */
-  std::unique_ptr<IntegerLiteralNode> parseIntegerLiteral();
+  std::unique_ptr<List> parseList();
 
   /**
-  RealLiteral := tkREAL.
+  Quote := ' Element.
   */
-  std::unique_ptr<RealLiteralNode> parseRealLiteral();
+  std::unique_ptr<QuoteNode> parseQuotedElement();
+
+  // =====        Literal Parsers         =====
+  // ==========================================
 
   /**
-  ShortQuote := ' Element.
+  Literal :=
+    | Integer
+    | Real
+    | Boolean
+    | Null
   */
-  std::unique_ptr<QuoteNode> parseShortQuote();
+  std::shared_ptr<Literal> parseLiteral();
 
   /**
-  ListLikeElement := ( ListLikeElementBody ).
-  ListLikeElementBody :=
-    | Call
-    | List
-    | Quote
-    | Setq
-    | Func
-    | Lambda
-    | Prog
-    | Cond
-    | While
-    | Return
-    | Break
+  Integer := tkINTEGER.
   */
-  std::unique_ptr<ElementNode> parseListLikeElement();
+  std::shared_ptr<Integer> parseInteger();
 
   /**
-  List := Element* .
+  Real := tkREAL.
   */
-  std::unique_ptr<PureListNode> parseList();
+  std::shared_ptr<Real> parseReal();
 
   /**
-  Call := Ident Element* .
+  Boolean := tkBOOLEAN .
   */
-  std::unique_ptr<CallNode> parseListLikeCall();
+  std::shared_ptr<Boolean> parseBoolean();
 
   /**
-  Quote := quote Element .
+  Null := tkNULL .
   */
-  std::unique_ptr<QuoteNode> parseListLikeQuote();
-
-  /**
-  Setq := setq Ident Element .
-  */
-  std::unique_ptr<SetqNode> parseListLikeSetq();
-
-  std::unique_ptr<FuncNode> parseListLikeFunc();
-
-  std::unique_ptr<LambdaNode> parseListLikeLambda();
-
-  std::unique_ptr<ProgNode> parseListLikeProg();
-
-  std::unique_ptr<CondNode> parseListLikeCond();
-
-  std::unique_ptr<WhileNode> parseListLikeWhile();
-
-  std::unique_ptr<ReturnNode> parseListLikeReturn();
-
-  std::unique_ptr<BreakNode> parseListLikeBreak();
-
-  std::vector<std::unique_ptr<IdentifierNode>> parseFuncArguments();
+  std::shared_ptr<CallNode> parseNull();
 };
 }  // namespace flang

@@ -4,5 +4,5 @@
 
 namespace flang {
 
-std::unique_ptr<ProgramNode> parse(std::vector<Token>& tokens) { return ParserImpl(tokens).parseProgram(); }
+Program parse(std::vector<Token>& tokens) { return ParserImpl(tokens).parseProgram(); }
 }  // namespace flang
