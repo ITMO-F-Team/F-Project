@@ -2,6 +2,7 @@ add_library(flang
         flang/pp/ast_printer.cpp
         flang/tokenize/token.cpp
         flang/tokenize/tokenizer.cpp
+        flang/parse/ast.cpp
         flang/parse/parser_impl.cpp
         flang/parse/parser.cpp
         flang/eval/environment_stack.cpp

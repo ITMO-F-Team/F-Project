@@ -203,11 +203,4 @@ private:
     std::function<void(Visitor&, std::vector<std::shared_ptr<Element>>)> impl_;
 };
 
-void Visitor::visitProgram(Program program)
-{
-    for (auto& node : program) {
-        node->accept(*this);
-    }
-}
-
 } // namespace flang
