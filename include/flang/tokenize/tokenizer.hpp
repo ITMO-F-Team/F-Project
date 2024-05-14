@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "flang/tokenize/token_type.hpp"
 #include "token.hpp"
+#include "token_type.hpp"
 
 namespace flang
 {

@@ -1,6 +1,6 @@
 add_library(flang
-        flang/pp/print_token.cpp
-        flang/pp/print_ast.cpp
+        # flang/pp/print_token.cpp
+        # flang/pp/print_ast.cpp
         flang/tokenize/token.cpp
         flang/tokenize/tokenizer.cpp
         flang/parse/parser_impl.cpp
@@ -21,7 +21,7 @@ target_compile_options(flang
         $<$<CONFIG:RELEASE>:-O3>
 )
 
-target_link_libraries(flang PRIVATE nlohmann_json::nlohmann_json)
+# target_link_libraries(flang PRIVATE nlohmann_json::nlohmann_json)
 
 add_executable(flang-interpreter
         main.cpp)

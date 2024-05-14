@@ -93,13 +93,15 @@ private:
 
 class Null final : public Literal
 {
-} FNULL;
+};
 
 class List final : public Element
 {
 public:
     explicit List(std::vector<std::shared_ptr<Element>> elements)
-        : elements_(std::move(elements)){};
+        : elements_(std::move(elements))
+    {
+    }
 
     auto const& getElements() const
     {
