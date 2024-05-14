@@ -6,6 +6,7 @@ add_library(flang
         flang/parse/parser_impl.cpp
         flang/parse/parser.cpp
         flang/eval/environment_stack.cpp
+        flang/eval/eval_visitor.cpp
 )
 
 target_include_directories(

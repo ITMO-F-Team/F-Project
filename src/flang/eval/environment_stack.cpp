@@ -2,10 +2,9 @@
 #include <flang/flang_exception.hpp>
 #include <flang/parse/ast.hpp>
 #include <memory>
-#include <optional>
 #include <stdexcept>
 
-#include "flang/eval/environment_stack.h"
+#include "flang/eval/environment_stack.hpp"
 
 namespace flang
 {
