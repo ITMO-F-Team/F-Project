@@ -86,9 +86,6 @@ std::shared_ptr<ElementNode> ParserImpl::parseListLikeElement() {
     case tkSETQ:
       list_like_node = parseListLikeSetq();
       break;
-    case tkIDENTIFIER:
-      list_like_node = parseListLikeCall();
-      break;
     case tkFUNC:
       list_like_node = parseListLikeFunc();
       break;
@@ -131,17 +128,6 @@ std::shared_ptr<PureListNode> ParserImpl::parseList() {
 std::shared_ptr<QuoteNode> ParserImpl::parseListLikeQuote() {
   eat(tkQUOTE);
   return std::make_unique<QuoteNode>(parseElement());
-}
-
-std::shared_ptr<CallNode> ParserImpl::parseListLikeCall() {
-  std::vector<std::shared_ptr<ElementNode>> args;
-
-  auto callee = eat(tkIDENTIFIER);
-
-  for (auto next_token = peekNext(); next_token.type() != tkRPAREN; next_token = peekNext()) {
-    args.emplace_back(parseElement());
-  }
-  return std::make_unique<CallNode>(std::make_unique<IdentifierNode>(callee.value()), std::move(args));
 }
 
 std::shared_ptr<SetqNode> ParserImpl::parseListLikeSetq() {

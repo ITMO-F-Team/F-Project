@@ -1,10 +1,12 @@
 #include "eval_visitor.hpp"
 
+#include <algorithm>
 #include <flang/eval/value.hpp>
 #include <flang/flang_exception.hpp>
 #include <flang/parse/ast.hpp>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <list>
 #include <map>
 #include <memory>
@@ -49,11 +51,16 @@ void EvalVisitor::visitIntegerLiteral(IntegerLiteralNode const& node) { _result 
 void EvalVisitor::visitRealLiteral(RealLiteralNode const& node) { throw not_implemented_exception(""); }
 
 void EvalVisitor::visitPureList(PureListNode const& node) {
-  std::list<Value> elements;
-  for (auto& el : node.elements()) {
-    elements.emplace_back(this->visitElement(el));
+  if (node.elements().empty()) {
+    throw runtime_exception("Canont call empty list");
   }
-  _result = ListValue(elements);
+  auto fn = this->visitElement(node.elements()[0]);
+
+  std::vector<Value> args;
+  std::transform(node.elements().begin() + 1, node.elements().end(), std::back_inserter(args),
+                 [this](auto&& node) { return this->visitElement(node); });
+
+  call(fn, args);
 }
 
 void EvalVisitor::callUserFunc(UserFuncValue user_func, std::vector<Value> args) {
@@ -85,18 +92,6 @@ void EvalVisitor::call(Value callee, std::vector<Value> args) {
   } else {
     throw runtime_exception("You can only call callables");
   }
-}
-
-void EvalVisitor::visitCall(CallNode const& node) {
-  // Eval callee
-  auto fn = this->visitElement(node.callee());
-  // Eval args
-  std::vector<Value> args;
-  for (auto& arg_expr : node.args()) {
-    args.emplace_back(this->visitElement(arg_expr));
-  }
-  // Eval call
-  call(fn, args);
 }
 
 void EvalVisitor::visitQuote(QuoteNode const& node) { throw not_implemented_exception(""); }
@@ -150,7 +145,10 @@ void EvalVisitor::visitLambda(LambdaNode const& node) {
   _result = f;
 }
 
-void EvalVisitor::visitProg(ProgNode const& node) { this->visitElement(node.body()); }
+void EvalVisitor::visitProg(ProgNode const& node) {
+  // local context
+  this->visitElement(node.body());
+}
 
 void EvalVisitor::visitCond(CondNode const& node) {
   auto cond_value = std::get<BoolValue>(this->visitElement(node.condition()));

@@ -15,11 +15,6 @@ void print_element(ElementNode const& element, json& output) {
         print_identifier(*identifier_node, output);
       }
       break;
-    case ElementNodeType::Call:
-      if (const CallNode* call_node = dynamic_cast<CallNode const*>(&element)) {
-        print_call_node(*call_node, output);
-      }
-      break;
     case ElementNodeType::IntegerLiteral:
       if (const IntegerLiteralNode* integer_node = dynamic_cast<IntegerLiteralNode const*>(&element)) {
         print_integer_literal(*integer_node, output);
@@ -188,23 +183,6 @@ void print_identifier(IdentifierNode const& node, json& output) { output["identi
 void print_integer_literal(IntegerLiteralNode const& node, json& output) { output["integer"] = node.value(); }
 
 void print_real_literal(RealLiteralNode const& node, json& output) { output["real"] = node.value(); }
-
-void print_call_node(CallNode const& node, json& output) {
-  json call_output;
-  call_output["call"] = {};
-  print_identifier(node.callee(), call_output["call"]["name"]);
-
-  if (node.args().empty()) {
-    call_output["call"]["args"] = {};
-  }
-
-  for (const auto& arg : node.args()) {
-    json arg_output;
-    print_element(*arg.get(), arg_output);
-    call_output["call"]["args"].push_back(arg_output);
-  }
-  output.push_back(call_output);
-}
 
 void print_prog(std::ostream& os, ProgramNode const& node) {
   json output;

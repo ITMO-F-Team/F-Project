@@ -10,7 +10,6 @@ namespace flang {
 
 enum class ElementNodeType {
   Identifier,
-  Call,
   IntegerLiteral,
   RealLiteral,
   Setq,
@@ -30,7 +29,6 @@ class IdentifierNode;
 class IntegerLiteralNode;
 class RealLiteralNode;
 class PureListNode;
-class CallNode;
 class QuoteNode;
 class SetqNode;
 class WhileNode;
@@ -48,7 +46,6 @@ class visitor {
   virtual void visitIntegerLiteral(IntegerLiteralNode const& node) = 0;
   virtual void visitRealLiteral(RealLiteralNode const& node) = 0;
   virtual void visitPureList(PureListNode const& node) = 0;
-  virtual void visitCall(CallNode const& node) = 0;
   virtual void visitQuote(QuoteNode const& node) = 0;
   virtual void visitSetq(SetqNode const& node) = 0;
   virtual void visitWhile(WhileNode const& node) = 0;
@@ -144,26 +141,6 @@ class PureListNode : public ElementNode {
 
  private:
   std::vector<std::shared_ptr<ElementNode>> elements_;
-};
-
-class CallNode : public ElementNode {
- public:
-  CallNode(std::shared_ptr<IdentifierNode> callee, std::vector<std::shared_ptr<ElementNode>> args)
-      : callee_(std::move(callee)), args_(std::move(args)) {}
-
-  virtual ~CallNode() {}
-
-  virtual void accept(visitor& visitor) const override { visitor.visitCall(*this); }
-
-  IdentifierNode const& callee() const { return *callee_; }
-
-  std::vector<std::shared_ptr<ElementNode>> const& args() const { return args_; }
-
-  ElementNodeType type() const override { return ElementNodeType::Call; }
-
- private:
-  std::shared_ptr<IdentifierNode> callee_;
-  std::vector<std::shared_ptr<ElementNode>> args_;
 };
 
 // --- Builtins ---

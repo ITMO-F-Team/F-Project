@@ -6,8 +6,6 @@ using json = nlohmann::ordered_json;
 namespace flang {
 void print_identifier(IdentifierNode const& node, json& output);
 
-void print_call_node(CallNode const& node, json& output);
-
 void print_integer_literal(IntegerLiteralNode const& node, json& output);
 
 void print_real_literal(RealLiteralNode const& node, json& output);

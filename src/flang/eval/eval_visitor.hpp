@@ -25,8 +25,6 @@ class EvalVisitor : public visitor {
 
   virtual void visitPureList(PureListNode const& node);
 
-  virtual void visitCall(CallNode const& node);
-
   virtual void visitQuote(QuoteNode const& node);
 
   virtual void visitSetq(SetqNode const& node);

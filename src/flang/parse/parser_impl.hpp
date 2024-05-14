@@ -85,11 +85,6 @@ class ParserImpl {
   std::shared_ptr<PureListNode> parseList();
 
   /**
-  Call := Ident Element* .
-  */
-  std::shared_ptr<CallNode> parseListLikeCall();
-
-  /**
   Quote := quote Element .
   */
   std::shared_ptr<QuoteNode> parseListLikeQuote();
