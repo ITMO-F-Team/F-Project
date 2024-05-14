@@ -17,9 +17,12 @@ class Null;
 class List;
 class Function;
 
+using Program = std::vector<std::shared_ptr<Element>>;
+
 class Visitor
 {
 public:
+    virtual void visitProgram(Program program);
     virtual void visitIdentifier(std::shared_ptr<Identifier> node) = 0;
     virtual void visitInteger(std::shared_ptr<Integer> node)       = 0;
     virtual void visitReal(std::shared_ptr<Real> node)             = 0;
@@ -39,8 +42,6 @@ public:
 private:
     // TODO: Location
 };
-
-using Program = std::vector<std::shared_ptr<Element>>;
 
 class Identifier : public Element, std::enable_shared_from_this<Identifier>
 {
@@ -201,5 +202,12 @@ private:
     std::shared_ptr<Identifier> identifier_;
     std::function<void(Visitor&, std::vector<std::shared_ptr<Element>>)> impl_;
 };
+
+void Visitor::visitProgram(Program program)
+{
+    for (auto& node : program) {
+        node->accept(*this);
+    }
+}
 
 } // namespace flang
