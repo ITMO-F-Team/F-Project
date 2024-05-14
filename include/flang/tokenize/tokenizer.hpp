@@ -22,6 +22,9 @@ private:
         {tkQUOTEMARK, std::regex("'")},
         {tkIDENTIFIER, std::regex("[a-zA-Z][a-zA-Z0-9]*")},
         {tkINTEGER, std::regex("[+-]?\\d+")},
-        {tkREAL, std::regex("[+-]?\\d+\\.\\d+")}};
+        {tkREAL, std::regex("[+-]?\\d+\\.\\d+")},
+        {tkBOOLEAN, std::regex("(true|false)")},
+        {tkNULL, std::regex("null")},
+    };
 };
 } // namespace flang

@@ -2,12 +2,5 @@
 
 namespace flang
 {
-enum TokenType {
-    tkLPAREN,
-    tkRPAREN,
-    tkQUOTEMARK,
-    tkIDENTIFIER,
-    tkINTEGER,
-    tkREAL,
-};
+enum TokenType { tkLPAREN, tkRPAREN, tkQUOTEMARK, tkIDENTIFIER, tkINTEGER, tkREAL, tkBOOLEAN, tkNULL };
 }
