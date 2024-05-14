@@ -1,12 +1,12 @@
 #pragma once
 
-#include <flang/parse/ast.hpp>
-#include <flang/tokenize/token.hpp>
 #include <memory>
 #include <vector>
 
-namespace flang {
+#include "ast.hpp"
+#include "flang/tokenize/token.hpp"
 
-std::unique_ptr<ProgramNode> parse(std::vector<Token>& tokens);
-
+namespace flang
+{
+Program parse(std::vector<Token> const& tokens);
 }
