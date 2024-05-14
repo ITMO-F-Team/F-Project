@@ -4,12 +4,19 @@
 #include <string>
 #include <vector>
 
+#include "flang/ast_visitor.hpp"
+
 namespace flang
 {
+
+class Visitor;
+
 class Element
 {
 public:
     virtual ~Element() = default;
+
+    virtual void accept(Visitor& visitor) = 0;
 
 private:
     // TODO: Location
@@ -17,7 +24,7 @@ private:
 
 using Program = std::vector<std::shared_ptr<Element>>;
 
-class Identifier : public Element
+class Identifier : public Element, std::enable_shared_from_this<Identifier>
 {
 public:
     explicit Identifier(std::string name)
@@ -30,6 +37,12 @@ public:
         return name_;
     }
 
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitIdentifier(shared_from_this());
+    }
+
+
 private:
     std::string name_;
 };
@@ -40,7 +53,7 @@ public:
     virtual ~Literal() = default;
 };
 
-class Integer final : public Literal
+class Integer final : public Literal, std::enable_shared_from_this<Integer>
 {
 public:
     explicit Integer(int64_t value)
@@ -53,11 +66,16 @@ public:
         return value_;
     }
 
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitInteger(shared_from_this());
+    }
+
 private:
     int64_t value_;
 };
 
-class Real final : public Literal
+class Real final : public Literal, std::enable_shared_from_this<Real>
 {
 public:
     explicit Real(double value)
@@ -70,11 +88,16 @@ public:
         return value_;
     }
 
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitReal(shared_from_this());
+    }
+
 private:
     double value_;
 };
 
-class Boolean final : public Literal
+class Boolean final : public Literal, std::enable_shared_from_this<Boolean>
 {
 public:
     explicit Boolean(bool value)
@@ -87,25 +110,37 @@ public:
         return value_;
     }
 
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitBoolean(shared_from_this());
+    }
+
 private:
     bool value_;
 };
 
-class Null final : public Literal
+class Null final : public Literal, std::enable_shared_from_this<Null>
 {
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitNull(shared_from_this());
+    }
 };
 
-class List final : public Element
+class List final : public Element, std::enable_shared_from_this<List>
 {
 public:
     explicit List(std::vector<std::shared_ptr<Element>> elements)
-        : elements_(std::move(elements))
-    {
-    }
+        : elements_(std::move(elements)){}
 
     auto const& getElements() const
     {
         return elements_;
+    }
+
+    void accept(Visitor& visitor) override
+    {
+        visitor.visitList(shared_from_this());
     }
 
 private:
