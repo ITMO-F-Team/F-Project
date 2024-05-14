@@ -10,6 +10,11 @@ namespace flang
 class EvalVisitor : public Visitor
 {
 public:
+    EvalVisitor()
+    {
+        setBuiltins();
+    }
+
     std::shared_ptr<Element> evalElement(std::shared_ptr<Element> node);
     void visitIdentifier(std::shared_ptr<Identifier> node) override;
     void visitInteger(std::shared_ptr<Integer> node) override;
@@ -27,8 +32,11 @@ public:
     std::shared_ptr<Real> requireReal(std::shared_ptr<Real> element);
     std::shared_ptr<Boolean> requireBoolean(std::shared_ptr<Element> element);
     std::shared_ptr<List> requireList(std::shared_ptr<Element> element);
+
 private:
     EnvironmentStack env_;
     std::shared_ptr<Element> result_;
+
+    void setBuiltins();
 };
 } // namespace flang
