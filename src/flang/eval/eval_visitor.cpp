@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "builtins.hpp"
 #include "flang/eval/eval_visitor.hpp"
 #include "flang/parse/ast.hpp"
 
@@ -132,6 +133,15 @@ std::shared_ptr<List> EvalVisitor::requireList(std::shared_ptr<Element> element)
         throwRuntimeError("{} is not a list");
     }
     return result;
+}
+
+void EvalVisitor::setBuiltins()
+{
+    for (auto const& builtin : getBuiltins()) {
+        auto id = std::make_shared<Identifier>(builtin.name);
+        auto fn = std::make_shared<Function>(std::move(id), builtin.impl);
+        storeVariable(builtin.name, fn);
+    }
 }
 
 } // namespace flang
