@@ -22,6 +22,7 @@ public:
     std::shared_ptr<Element> loadVariable(std::string name);
     void storeVariable(std::string name, std::shared_ptr<Element> element);
     void throwRuntimeError(std::string message);
+    std::shared_ptr<Function> requireFunction(std::shared_ptr<Element> element);
 
 private:
     EnvironmentStack env_;
