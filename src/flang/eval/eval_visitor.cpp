@@ -87,9 +87,49 @@ void EvalVisitor::throwRuntimeError(std::string const& message)
 std::shared_ptr<Function> EvalVisitor::requireFunction(std::shared_ptr<Element> element)
 {
     auto result = std::dynamic_pointer_cast<Function>(element);
-    if (result == nullptr) {
+    if (!result) {
         // TODO: print element
         throwRuntimeError("{} is not a function");
+    }
+    return result;
+}
+
+std::shared_ptr<Integer> EvalVisitor::requireInteger(std::shared_ptr<Element> element)
+{
+    auto result = std::dynamic_pointer_cast<Integer>(element);
+    if (!result) {
+        // TODO: print element
+        throwRuntimeError("{} is not an integer");
+    }
+    return result;
+}
+
+std::shared_ptr<Real> EvalVisitor::requireReal(std::shared_ptr<Real> element)
+{
+    auto result = std::dynamic_pointer_cast<Real>(element);
+    if (!result) {
+        // TODO: print element
+        throwRuntimeError("{} is not a real number");
+    }
+    return result;
+}
+
+std::shared_ptr<Boolean> EvalVisitor::requireBoolean(std::shared_ptr<Element> element)
+{
+    auto result = std::dynamic_pointer_cast<Boolean>(element);
+    if (!result) {
+        // TODO: print element
+        throwRuntimeError("{} is not a boolean");
+    }
+    return result;
+}
+
+std::shared_ptr<List> EvalVisitor::requireList(std::shared_ptr<Element> element)
+{
+    auto result = std::dynamic_pointer_cast<List>(element);
+    if (!result) {
+        // TODO: print element
+        throwRuntimeError("{} is not a list");
     }
     return result;
 }

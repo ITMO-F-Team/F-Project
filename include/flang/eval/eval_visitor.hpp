@@ -23,7 +23,10 @@ public:
     void storeVariable(std::string const& name, std::shared_ptr<Element> element);
     void throwRuntimeError(std::string const& message);
     std::shared_ptr<Function> requireFunction(std::shared_ptr<Element> element);
-
+    std::shared_ptr<Integer> requireInteger(std::shared_ptr<Element> element);
+    std::shared_ptr<Real> requireReal(std::shared_ptr<Real> element);
+    std::shared_ptr<Boolean> requireBoolean(std::shared_ptr<Element> element);
+    std::shared_ptr<List> requireList(std::shared_ptr<Element> element);
 private:
     EnvironmentStack env_;
     std::shared_ptr<Element> result_;
