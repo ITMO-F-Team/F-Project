@@ -19,9 +19,9 @@ public:
     void visitList(std::shared_ptr<List> node) override;
     void visitFunction(std::shared_ptr<Function> node) override;
     void setResult(std::shared_ptr<Element> element);
-    std::shared_ptr<Element> loadVariable(std::string name);
-    void storeVariable(std::string name, std::shared_ptr<Element> element);
-    void throwRuntimeError(std::string message);
+    std::shared_ptr<Element> loadVariable(std::string const& name);
+    void storeVariable(std::string const& name, std::shared_ptr<Element> element);
+    void throwRuntimeError(std::string const& message);
     std::shared_ptr<Function> requireFunction(std::shared_ptr<Element> element);
 
 private:
