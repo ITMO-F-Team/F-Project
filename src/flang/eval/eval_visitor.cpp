@@ -1,6 +1,10 @@
-#include "flang/eval/eval_visitor.hpp"
-#include <flang/parse/ast.hpp>
+#include <algorithm>
+#include <iterator>
 #include <memory>
+#include <vector>
+
+#include "flang/eval/eval_visitor.hpp"
+#include "flang/parse/ast.hpp"
 
 namespace flang
 {
@@ -38,7 +42,21 @@ void EvalVisitor::visitNull(std::shared_ptr<Null> node)
 
 void EvalVisitor::visitList(std::shared_ptr<List> node)
 {
-    // TODO: Call
+    auto elements = node->getElements();
+    // 0. Check for NIL
+    if (elements.empty()) {
+        // Try `(print ())` in gnu clisp 2.49.60
+        // It prints NIL
+        setResult(std::make_shared<Null>(Null()));
+        return;
+    }
+    // 1. Eval callee
+    auto callee = requireFunction(evalElement(elements[0]));
+    // 2. Collect args
+    std::vector<std::shared_ptr<Element>> args;
+    std::transform(elements.begin() + 1, elements.end(), std::back_inserter(args), [](auto&& el) { return el; });
+    // 3. Invoke
+    callee->call(*this, std::move(args));
 }
 
 void EvalVisitor::visitFunction(std::shared_ptr<Function> node)
@@ -64,6 +82,16 @@ void EvalVisitor::storeVariable(std::string name, std::shared_ptr<Element> eleme
 void EvalVisitor::throwRuntimeError(std::string message)
 {
     return env_.throwRuntimeError(message);
+}
+
+std::shared_ptr<Function> EvalVisitor::requireFunction(std::shared_ptr<Element> element)
+{
+    auto result = std::dynamic_pointer_cast<Function>(element);
+    if (result == nullptr) {
+        // TODO: print element
+        throwRuntimeError("{} is not a function");
+    }
+    return result;
 }
 
 } // namespace flang
