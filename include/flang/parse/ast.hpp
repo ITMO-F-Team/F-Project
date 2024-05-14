@@ -181,6 +181,11 @@ public:
     {
     }
 
+    std::shared_ptr<Identifier> getName() const
+    {
+        return identifier_;
+    }
+
     template <class... Args>
     void call(Args&&... args)
     {

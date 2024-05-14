@@ -1,6 +1,5 @@
 add_library(flang
-        # flang/pp/print_token.cpp
-        # flang/pp/print_ast.cpp
+        flang/pp/ast_printer.cpp
         flang/tokenize/token.cpp
         flang/tokenize/tokenizer.cpp
         flang/parse/parser_impl.cpp
