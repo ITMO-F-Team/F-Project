@@ -14,5 +14,5 @@ if (ENABLE_ASAN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 endif ()
 
-add_subdirectory(external)
+# add_subdirectory(external)
 add_subdirectory(src)
