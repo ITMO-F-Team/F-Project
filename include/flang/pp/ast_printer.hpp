@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <sstream>
 
 namespace flang
 {
@@ -32,4 +33,7 @@ public:
 private:
     std::ostream& os_;
 };
+
+std::string printElement(std::shared_ptr<Element> const& node);
+
 } // namespace flang

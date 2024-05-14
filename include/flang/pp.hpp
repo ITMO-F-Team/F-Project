@@ -1,4 +1,3 @@
 #pragma once
 
-#include "pp/print_ast.hpp"
-#include "pp/print_token.hpp"
+#include "pp/ast_printer.hpp"

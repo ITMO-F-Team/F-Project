@@ -43,4 +43,11 @@ void AstPrinter::visitFunction(std::shared_ptr<Function> node)
 {
     os_ << "<function " << node->getName()->getName() << ">";
 }
+
+std::string printElement(std::shared_ptr<Element> const& node)
+{
+    std::ostringstream oss;
+    AstPrinter(oss).visitElement(node);
+    return oss.str();
+}
 } // namespace flang
