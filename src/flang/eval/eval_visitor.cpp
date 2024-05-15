@@ -148,4 +148,10 @@ void EvalVisitor::requireArgsNumber(std::vector<std::shared_ptr<Element>> args, 
     }
 }
 
+void EvalVisitor::setAllBuiltins() {
+    for (auto builtin : builtin_registry_.getAllBuiltins()) {
+        storeVariable(builtin->getName(), builtin);
+    }
+}
+
 } // namespace flang

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "flang/parse/ast.hpp"
 #include <functional>
 #include <map>
 #include <string>
+
+#include "flang/parse/ast.hpp"
 
 
 namespace flang
