@@ -4,8 +4,10 @@
 #include <iostream>
 #include <iterator>
 
+#include "flang/eval/eval_visitor.hpp"
 #include "flang/flang_exception.hpp"
 #include "flang/tokenize/tokenizer.hpp"
+
 
 std::string readSource(std::string const& source_file_name)
 {
@@ -28,12 +30,8 @@ int main(int argc, char* argv[])
     std::cout << "Source program:\n" << source << '\n';
     try {
         auto tokens = flang::Tokenizer().tokenize(source);
-        // std::cout << "== Token representation ==\n";
-        // std::copy(tokens.begin(), tokens.end(), std::ostream_iterator<flang::Token>(std::cout, " "));
-        // std::cout << "\n\n";
-
-        auto prog = flang::parse(tokens);
-        // std::cout << "== AST ==\n";
+        auto prog   = flang::parse(tokens);
+        flang::EvalVisitor().visitProgram(prog);
     } catch (flang::flang_exception const& e) {
         std::cerr << "\nERROR: " << e.what();
         return 1;

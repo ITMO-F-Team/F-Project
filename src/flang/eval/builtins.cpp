@@ -9,14 +9,15 @@
 namespace flang
 {
 
-void print_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args) {
-    for (auto &arg : args) {
-        auto x = visitor->evalElement(arg);
-        // auto text = printElement(visitor->vi);
+void print_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    for (auto& arg : args) {
+        std::cout << printElement(visitor->evalElement(arg));
     }
 }
 
-std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins() {
+std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
+{
     std::vector<std::shared_ptr<Builtin>> result;
     for (auto const& entry : registry_) {
         result.emplace_back(std::make_shared<Builtin>(entry.first));
@@ -24,7 +25,8 @@ std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins() {
     return result;
 }
 
-void BuiltinsRegistry::callBuiltin(std::shared_ptr<Builtin> builtin, std::vector<std::shared_ptr<Element>> args) {
+void BuiltinsRegistry::callBuiltin(std::shared_ptr<Builtin> builtin, std::vector<std::shared_ptr<Element>> args)
+{
     if (!registry_.contains(builtin->getName())) {
         throw std::runtime_error("Builtin not found: " + builtin->getName());
     }
@@ -32,8 +34,9 @@ void BuiltinsRegistry::callBuiltin(std::shared_ptr<Builtin> builtin, std::vector
     impl(visitor_, args);
 }
 
-void BuiltinsRegistry::registerAllBuiltins() {
-    // TODO: add builtins
+void BuiltinsRegistry::registerAllBuiltins()
+{
+    registry_.insert_or_assign("print", print_impl);
 }
 
 } // namespace flang
