@@ -28,7 +28,8 @@ public:
     void visitBoolean(std::shared_ptr<Boolean> node) override;
     void visitNull(std::shared_ptr<Null> node) override;
     void visitList(std::shared_ptr<List> node) override;
-    void visitFunction(std::shared_ptr<Function> node) override;
+    void visitUserFunction(std::shared_ptr<UserFunction> node) override;
+    void visitBuiltin(std::shared_ptr<Builtin> node) override;
 
 private:
     std::ostream& os_;

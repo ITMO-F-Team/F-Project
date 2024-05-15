@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "builtins.hpp"
 #include "flang/eval/eval_visitor.hpp"
 #include "flang/parse/ast.hpp"
 
@@ -52,15 +52,20 @@ void EvalVisitor::visitList(std::shared_ptr<List> node)
         return;
     }
     // 1. Eval callee
-    auto callee = requireFunction(evalElement(elements[0]));
+    // auto callee = requireFunction(evalElement(elements[0]));
     // 2. Collect args
     std::vector<std::shared_ptr<Element>> args;
     std::copy(elements.begin() + 1, elements.end(), std::back_inserter(args));
     // 3. Invoke
-    callee->call(*this, std::move(args));
+    // callee->call(*this, std::move(args));
 }
 
-void EvalVisitor::visitFunction(std::shared_ptr<Function> node)
+void EvalVisitor::visitUserFunction(std::shared_ptr<UserFunction> node)
+{
+    setResult(std::move(node));
+}
+
+void EvalVisitor::visitBuiltin(std::shared_ptr<Builtin> node)
 {
     setResult(std::move(node));
 }
@@ -83,16 +88,6 @@ void EvalVisitor::storeVariable(std::string const& name, std::shared_ptr<Element
 void EvalVisitor::throwRuntimeError(std::string const& message)
 {
     return env_.throwRuntimeError(message);
-}
-
-std::shared_ptr<Function> EvalVisitor::requireFunction(std::shared_ptr<Element> element)
-{
-    auto result = std::dynamic_pointer_cast<Function>(element);
-    if (!result) {
-        // TODO: print element
-        throwRuntimeError("{} is not a function");
-    }
-    return result;
 }
 
 std::shared_ptr<Integer> EvalVisitor::requireInteger(std::shared_ptr<Element> element)
@@ -135,12 +130,21 @@ std::shared_ptr<List> EvalVisitor::requireList(std::shared_ptr<Element> element)
     return result;
 }
 
-void EvalVisitor::setBuiltins()
+std::shared_ptr<Identifier> EvalVisitor::requireIdentifier(std::shared_ptr<Element> element)
 {
-    for (auto const& builtin : getBuiltins()) {
-        auto id = std::make_shared<Identifier>(builtin.name);
-        auto fn = std::make_shared<Function>(std::move(id), builtin.impl);
-        storeVariable(builtin.name, fn);
+    auto result = std::dynamic_pointer_cast<Identifier>(element);
+    if (!result) {
+        // TODO: print element
+        throwRuntimeError("{} is not an identifier");
+    }
+    return result;
+}
+
+void EvalVisitor::requireArgsNumber(std::vector<std::shared_ptr<Element>> args, int n)
+{
+    auto actual_n = args.size();
+    if (actual_n != n) {
+        throwRuntimeError("Expected " + std::to_string(n) + " args, but got " + std::to_string(actual_n));
     }
 }
 

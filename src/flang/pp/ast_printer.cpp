@@ -1,4 +1,5 @@
 #include "flang/pp/ast_printer.hpp"
+#include <flang/parse/ast.hpp>
 
 namespace flang
 {
@@ -39,9 +40,14 @@ void AstPrinter::visitList(std::shared_ptr<List> node)
     }
 }
 
-void AstPrinter::visitFunction(std::shared_ptr<Function> node)
+void AstPrinter::visitUserFunction(std::shared_ptr<UserFunction> node)
 {
-    os_ << "<function " << node->getName()->getName() << ">";
+    os_ << "<function " << node->getName() << ">";
+}
+
+void AstPrinter::visitBuiltin(std::shared_ptr<Builtin> node)
+{
+    os_ << "<built-in function " << node->getName() << ">";
 }
 
 std::string printElement(std::shared_ptr<Element> const& node)
