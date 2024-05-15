@@ -119,6 +119,19 @@ void tail_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     }
 }
 
+void cons_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+
+    auto head = visitor->evalElement(args[0]);
+    auto list = visitor->requireList(visitor->evalElement(args[1]));
+
+    std::vector<std::shared_ptr<Element>> concat_list = {head};
+    std::copy(list->getElements().begin(), list->getElements().end(), std::back_inserter(concat_list));
+
+    visitor->setResult(std::make_shared<List>(std::move(concat_list)));
+}
+
 template <class T>
 void is_type_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
@@ -182,6 +195,7 @@ void BuiltinsRegistry::registerAllBuiltins()
 
     registry_.insert_or_assign("head", head_impl);
     registry_.insert_or_assign("tail", tail_impl);
+    registry_.insert_or_assign("cons", cons_impl);
 
     registry_.insert_or_assign("isint", is_type_impl<Integer>);
     registry_.insert_or_assign("isreal", is_type_impl<Real>);
@@ -207,7 +221,6 @@ void BuiltinsRegistry::registerAllBuiltins()
 
     // TODO:
     // equal, nonequal, not
-    // cons
     // lambda prog break
     // eval
 }
