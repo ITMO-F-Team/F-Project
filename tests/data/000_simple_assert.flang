@@ -1,3 +1,2 @@
-(assert (equal true true))
-(assert (nonequal true false))
-(assert (not false))
+(setq x '(1 2))
+(print (cons 5 x))
