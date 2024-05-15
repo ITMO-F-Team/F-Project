@@ -1,6 +1,7 @@
 #pragma once
 
 #include "environment_stack.hpp"
+#include <flang/eval/builtins.hpp>
 #include <flang/parse/ast.hpp>
 #include <memory>
 #include <string>
@@ -11,6 +12,10 @@ namespace flang
 class EvalVisitor : public Visitor
 {
 public:
+    EvalVisitor() {
+        setAllBuiltins();
+    }
+
     std::shared_ptr<Element> evalElement(std::shared_ptr<Element> node);
     void visitIdentifier(std::shared_ptr<Identifier> node) override;
     void visitInteger(std::shared_ptr<Integer> node) override;
@@ -38,5 +43,8 @@ public:
 private:
     EnvironmentStack env_;
     std::shared_ptr<Element> result_;
+    BuiltinsRegistry builtin_registry_;
+
+    void setAllBuiltins();
 };
 } // namespace flang
