@@ -34,6 +34,21 @@ void setq_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     visitor->storeVariable(id->getName(), val);
 }
 
+void cond_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    if ((args.size() != 2) && (args.size() != 3)) {
+        visitor->throwRuntimeError("cond expects 2-3 arguments");
+    }
+    auto cond = visitor->requireBoolean(visitor->evalElement(args[0]));
+    if (cond->getValue()) {
+        visitor->evalElement(args[1]);
+    } else {
+        if (args.size() == 3) {
+            visitor->evalElement(args[2]);
+        }
+    }
+}
+
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
 {
     std::vector<std::shared_ptr<Builtin>> result;
@@ -57,6 +72,7 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("print", print_impl);
     registry_.insert_or_assign("assert", assert_impl);
     registry_.insert_or_assign("setq", setq_impl);
+    registry_.insert_or_assign("cond", cond_impl);
 }
 
 } // namespace flang
