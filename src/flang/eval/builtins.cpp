@@ -96,6 +96,28 @@ void plus_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     visitor->setResult(std::make_shared<Integer>(lhs->getValue() + rhs->getValue()));
 }
 
+void head_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    auto list = visitor->requireList(visitor->evalElement(args[0]));
+    if (list->getElements().empty()) {
+        visitor->setResult(std::make_shared<Null>());
+    } else {
+        visitor->setResult(list->getElements()[0]);
+    }
+}
+
+void tail_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    auto list = visitor->requireList(visitor->evalElement(args[0]));
+    if (list->getElements().size() <= 1) {
+        visitor->setResult(std::make_shared<Null>());
+    } else {
+        visitor->setResult(std::make_shared<List>(std::vector<std::shared_ptr<Element>>(list->getElements().begin() + 1, list->getElements().end())));
+    }
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -130,6 +152,9 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("quote", quote_impl);
 
     registry_.insert_or_assign("plus", plus_impl);
+
+    registry_.insert_or_assign("head", head_impl);
+    registry_.insert_or_assign("tail", tail_impl);
 }
 
 } // namespace flang
