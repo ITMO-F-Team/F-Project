@@ -35,9 +35,14 @@ void AstPrinter::visitNull(std::shared_ptr<Null> node)
 
 void AstPrinter::visitList(std::shared_ptr<List> node)
 {
-    for (auto& el : node->getElements()) {
-        visitElement(el);
+    os_ << "(";
+    for (auto it = node->getElements().begin(); it != node->getElements().end(); ++it){
+        visitElement(*it);
+        if (it + 1 != node->getElements().end()) {
+            os_ << ' ';
+        }
     }
+    os_ << ")";
 }
 
 void AstPrinter::visitUserFunction(std::shared_ptr<UserFunction> node)

@@ -14,10 +14,8 @@ namespace flang
 
 void print_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
-    for (auto& arg : args) {
-        auto x = visitor->evalElement(arg);
-        std::cout << printElement(x);
-    }
+    visitor->requireArgsNumber(args, 1);
+    std::cout << printElement(visitor->evalElement(args[0]));
 }
 
 void assert_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
@@ -84,6 +82,20 @@ void while_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
     }
 }
 
+void quote_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    visitor->setResult(args[0]);
+}
+
+void plus_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+    auto lhs = visitor->requireInteger(visitor->evalElement(args[0]));
+    auto rhs = visitor->requireInteger(visitor->evalElement(args[1]));
+    visitor->setResult(std::make_shared<Integer>(lhs->getValue() + rhs->getValue()));
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -115,6 +127,9 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("func", func_impl);
     registry_.insert_or_assign("return", return_impl);
     registry_.insert_or_assign("while", while_impl);
+    registry_.insert_or_assign("quote", quote_impl);
+
+    registry_.insert_or_assign("plus", plus_impl);
 }
 
 } // namespace flang
