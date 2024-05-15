@@ -87,11 +87,14 @@ std::shared_ptr<Identifier> ParserImpl::parseIdentifier()
 
 std::shared_ptr<List> ParserImpl::parseList()
 {
-    std::vector<std::shared_ptr<Element>> elements;
+    eat(tkLPAREN);
 
+    std::vector<std::shared_ptr<Element>> elements;
     for (auto tok = peekNext(); tok.type() != tkRPAREN; tok = peekNext()) {
         elements.emplace_back(parseElement());
     }
+
+    eat(tkRPAREN);
 
     return std::make_shared<List>(std::move(elements));
 }
