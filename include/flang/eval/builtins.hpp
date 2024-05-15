@@ -15,6 +15,12 @@ using BuiltinImpl = std::function<void(EvalVisitor* visitor, std::vector<std::sh
 class BuiltinsRegistry
 {
 public:
+    BuiltinsRegistry(EvalVisitor* visitor)
+        : visitor_(visitor)
+    {
+        registerAllBuiltins();
+    }
+
     std::vector<std::shared_ptr<Builtin>> getAllBuiltins();
     void callBuiltin(std::shared_ptr<Builtin> builtin, std::vector<std::shared_ptr<Element>> args);
 
