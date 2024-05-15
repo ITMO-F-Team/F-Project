@@ -26,6 +26,14 @@ void assert_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> arg
     }
 }
 
+void setq_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+    auto id  = visitor->requireIdentifier(args[0]);
+    auto val = visitor->evalElement(args[1]);
+    visitor->storeVariable(id->getName(), val);
+}
+
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
 {
     std::vector<std::shared_ptr<Builtin>> result;
@@ -48,6 +56,7 @@ void BuiltinsRegistry::registerAllBuiltins()
 {
     registry_.insert_or_assign("print", print_impl);
     registry_.insert_or_assign("assert", assert_impl);
+    registry_.insert_or_assign("setq", setq_impl);
 }
 
 } // namespace flang
