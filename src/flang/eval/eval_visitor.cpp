@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <flang/eval/environment_stack.hpp>
 #include <flang/pp/ast_printer.hpp>
 #include <iterator>
 #include <memory>
@@ -59,12 +60,33 @@ void EvalVisitor::visitList(std::shared_ptr<List> node)
     // 2. Eval callee
     auto callee = evalElement(elements[0]);
     if (auto fn = std::dynamic_pointer_cast<UserFunction>(callee)) {
-        throw std::runtime_error("not implemented");
+        callUserFunc(fn, args);
     } else if (auto b = std::dynamic_pointer_cast<Builtin>(callee)) {
         builtin_registry_->callBuiltin(b, args);
     } else {
         throwRuntimeError(printElement(callee) + " is not a function");
     }
+}
+
+void EvalVisitor::callUserFunc(std::shared_ptr<UserFunction> fn, std::vector<std::shared_ptr<Element>> args)
+{
+    // 1. Check arity
+    auto expected_n_args = fn->getFormalArgs().size();
+    auto actual_n_args   = args.size();
+    if (expected_n_args != actual_n_args) {
+        throwRuntimeError("Function " + fn->getName() + " expects " + std::to_string(expected_n_args) + " but got " + std::to_string(actual_n_args));
+    }
+    // 2. Eval args
+    std::vector<std::shared_ptr<Element>> arg_values;
+    std::transform(args.begin(), args.end(), std::back_inserter(arg_values), [this](auto&& x) { return evalElement(x); });
+    // 3. Create callframe
+    ScopedEnvironment env(env_);
+    // 3. Assign arg values to arg names
+    for (int i = 0; i < expected_n_args; i++) {
+        storeVariable(fn->getFormalArgs()[i], arg_values[i]);
+    }
+    // 4. Execute function body
+    evalElement(fn->getBody());
 }
 
 void EvalVisitor::visitUserFunction(std::shared_ptr<UserFunction> node)

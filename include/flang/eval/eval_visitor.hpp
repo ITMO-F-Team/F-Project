@@ -50,5 +50,7 @@ private:
     std::shared_ptr<BuiltinsRegistry> builtin_registry_;
 
     void setAllBuiltins();
+
+    void callUserFunc(std::shared_ptr<UserFunction> fn, std::vector<std::shared_ptr<Element>> args);
 };
 } // namespace flang

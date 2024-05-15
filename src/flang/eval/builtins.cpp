@@ -1,8 +1,11 @@
 #include "flang/eval/builtins.hpp"
+#include <algorithm>
 #include <flang/parse/ast.hpp>
 #include <flang/pp/ast_printer.hpp>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 
@@ -49,6 +52,25 @@ void cond_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     }
 }
 
+void func_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 3);
+    auto id        = visitor->requireIdentifier(args[0]);
+    auto args_list = visitor->requireList(args[1])->getElements();
+    auto body      = args[2];
+
+    std::vector<std::string> formal_args;
+    std::transform(args_list.begin(), args_list.end(), std::back_inserter(formal_args), [visitor](auto&& x) {
+        auto id = visitor->requireIdentifier(x);
+        return id->getName();
+    });
+
+    auto fn = std::make_shared<UserFunction>(id->getName(), formal_args, body);
+    visitor->storeVariable(id->getName(), fn);
+}
+
+// ====== Builtins Registry =====
+
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
 {
     std::vector<std::shared_ptr<Builtin>> result;
@@ -73,6 +95,7 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("assert", assert_impl);
     registry_.insert_or_assign("setq", setq_impl);
     registry_.insert_or_assign("cond", cond_impl);
+    registry_.insert_or_assign("func", func_impl);
 }
 
 } // namespace flang
