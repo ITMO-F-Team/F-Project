@@ -106,7 +106,7 @@ std::shared_ptr<Integer> EvalVisitor::requireInteger(std::shared_ptr<Element> el
     auto result = std::dynamic_pointer_cast<Integer>(element);
     if (!result) {
         // TODO: print element
-        throwRuntimeError("{} is not an integer");
+        throwRuntimeError(printElement(element) + " is not an integer");
     }
     return result;
 }
@@ -116,7 +116,7 @@ std::shared_ptr<Real> EvalVisitor::requireReal(std::shared_ptr<Real> element)
     auto result = std::dynamic_pointer_cast<Real>(element);
     if (!result) {
         // TODO: print element
-        throwRuntimeError("{} is not a real number");
+        throwRuntimeError(printElement(element) + " is not a real number");
     }
     return result;
 }
@@ -126,7 +126,7 @@ std::shared_ptr<Boolean> EvalVisitor::requireBoolean(std::shared_ptr<Element> el
     auto result = std::dynamic_pointer_cast<Boolean>(element);
     if (!result) {
         // TODO: print element
-        throwRuntimeError("{} is not a boolean");
+        throwRuntimeError(printElement(element) + " is not a boolean");
     }
     return result;
 }
@@ -136,7 +136,7 @@ std::shared_ptr<List> EvalVisitor::requireList(std::shared_ptr<Element> element)
     auto result = std::dynamic_pointer_cast<List>(element);
     if (!result) {
         // TODO: print element
-        throwRuntimeError("{} is not a list");
+        throwRuntimeError(printElement(element) + " is not a list");
     }
     return result;
 }
@@ -146,7 +146,7 @@ std::shared_ptr<Identifier> EvalVisitor::requireIdentifier(std::shared_ptr<Eleme
     auto result = std::dynamic_pointer_cast<Identifier>(element);
     if (!result) {
         // TODO: print element
-        throwRuntimeError("{} is not an identifier");
+        throwRuntimeError(printElement(element) + " is not an identifier");
     }
     return result;
 }

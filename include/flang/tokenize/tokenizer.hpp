@@ -20,11 +20,11 @@ private:
         {tkLPAREN, std::regex("\\(")},
         {tkRPAREN, std::regex("\\)")},
         {tkQUOTEMARK, std::regex("'")},
+        {tkBOOLEAN, std::regex("(true|false)")},
+        {tkNULL, std::regex("null")},
         {tkIDENTIFIER, std::regex("[a-zA-Z][a-zA-Z0-9]*")},
         {tkINTEGER, std::regex("[+-]?\\d+")},
         {tkREAL, std::regex("[+-]?\\d+\\.\\d+")},
-        {tkBOOLEAN, std::regex("(true|false)")},
-        {tkNULL, std::regex("null")},
     };
 };
 } // namespace flang
