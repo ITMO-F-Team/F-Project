@@ -1,5 +1,3 @@
-#pragma once
-
 #include "flang/eval/builtins.hpp"
 #include <flang/parse/ast.hpp>
 #include <flang/pp/ast_printer.hpp>
@@ -13,8 +11,8 @@ namespace flang
 
 void print_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args) {
     for (auto &arg : args) {
-        auto x = visitor->visitElement();
-        auto text = printElement(visitor->vi);
+        auto x = visitor->evalElement(arg);
+        // auto text = printElement(visitor->vi);
     }
 }
 
