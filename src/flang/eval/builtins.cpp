@@ -69,6 +69,21 @@ void func_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     visitor->storeVariable(id->getName(), fn);
 }
 
+void return_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    visitor->setResult(visitor->evalElement(args[0]));
+}
+
+void while_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+    auto cond = args[0];
+    while (visitor->requireBoolean(visitor->evalElement(cond))->getValue()) {
+        visitor->evalElement(args[1]);
+    }
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -91,11 +106,15 @@ void BuiltinsRegistry::callBuiltin(std::shared_ptr<Builtin> builtin, std::vector
 
 void BuiltinsRegistry::registerAllBuiltins()
 {
+    // TODO [BUILTINS]: quote lambda prog break
+    // TODO [PREDEFINED]: head tail cons; arithmetic; logic; eval
     registry_.insert_or_assign("print", print_impl);
     registry_.insert_or_assign("assert", assert_impl);
     registry_.insert_or_assign("setq", setq_impl);
     registry_.insert_or_assign("cond", cond_impl);
     registry_.insert_or_assign("func", func_impl);
+    registry_.insert_or_assign("return", return_impl);
+    registry_.insert_or_assign("while", while_impl);
 }
 
 } // namespace flang
