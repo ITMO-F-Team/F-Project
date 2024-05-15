@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <flang/parse/ast.hpp>
 #include <flang/pp/ast_printer.hpp>
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <stdexcept>
@@ -127,6 +128,27 @@ void is_type_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> ar
     visitor->setResult(std::make_shared<Boolean>(std::dynamic_pointer_cast<T>(evaluated_arg) != nullptr));
 }
 
+template <class ReturnType, class RequiredType, template <typename T = RequiredType::internal_type_t> class BinOp>
+void binop_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+
+    auto lhs = visitor->evalElement(args[0]);
+    auto rhs = visitor->evalElement(args[1]);
+
+    // TODO: Make require templated
+    if constexpr (std::is_same_v<RequiredType, Integer>) {
+        lhs = visitor->requireInteger(lhs);
+        rhs = visitor->requireInteger(rhs);
+    } else {
+        lhs = visitor->requireBoolean(lhs);
+        rhs = visitor->requireBoolean(rhs);
+    }
+
+    auto result_value = BinOp()(std::dynamic_pointer_cast<RequiredType>(lhs)->getValue(), std::dynamic_pointer_cast<RequiredType>(rhs)->getValue());
+    visitor->setResult(std::make_shared<ReturnType>(result_value));
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -149,8 +171,6 @@ void BuiltinsRegistry::callBuiltin(std::shared_ptr<Builtin> builtin, std::vector
 
 void BuiltinsRegistry::registerAllBuiltins()
 {
-    // TODO [BUILTINS]: quote lambda prog break
-    // TODO [PREDEFINED]: head tail cons; arithmetic; logic; eval
     registry_.insert_or_assign("print", print_impl);
     registry_.insert_or_assign("assert", assert_impl);
     registry_.insert_or_assign("setq", setq_impl);
@@ -159,8 +179,6 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("return", return_impl);
     registry_.insert_or_assign("while", while_impl);
     registry_.insert_or_assign("quote", quote_impl);
-
-    registry_.insert_or_assign("plus", plus_impl);
 
     registry_.insert_or_assign("head", head_impl);
     registry_.insert_or_assign("tail", tail_impl);
@@ -171,6 +189,27 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("isnull", is_type_impl<Null>);
     registry_.insert_or_assign("isatom", is_type_impl<Identifier>);
     registry_.insert_or_assign("islist", is_type_impl<List>);
+
+    registry_.insert_or_assign("plus", binop_impl<Integer, Integer, std::plus>);
+    registry_.insert_or_assign("minus", binop_impl<Integer, Integer, std::minus>);
+    registry_.insert_or_assign("times", binop_impl<Integer, Integer, std::multiplies>);
+    // TODO: Null division exception
+    registry_.insert_or_assign("divide", binop_impl<Integer, Integer, std::divides>);
+
+    registry_.insert_or_assign("less", binop_impl<Boolean, Integer, std::less>);
+    registry_.insert_or_assign("lesseq", binop_impl<Boolean, Integer, std::less_equal>);
+    registry_.insert_or_assign("greater", binop_impl<Boolean, Integer, std::greater>);
+    registry_.insert_or_assign("greatereq", binop_impl<Boolean, Integer, std::greater_equal>);
+
+    registry_.insert_or_assign("and", binop_impl<Boolean, Boolean, std::logical_and>);
+    registry_.insert_or_assign("or", binop_impl<Boolean, Boolean, std::logical_or>);
+    registry_.insert_or_assign("xor", binop_impl<Boolean, Boolean, std::bit_xor>);
+
+    // TODO:
+    // equal, nonequal, not
+    // cons
+    // lambda prog break
+    // eval
 }
 
 } // namespace flang

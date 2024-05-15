@@ -84,12 +84,14 @@ public:
 class Integer final : public Literal, public std::enable_shared_from_this<Integer>
 {
 public:
+    using internal_type_t = int64_t;
+
     explicit Integer(int64_t value)
         : value_(value)
     {
     }
 
-    int64_t getValue() const
+    internal_type_t getValue() const
     {
         return value_;
     }
@@ -100,18 +102,20 @@ public:
     }
 
 private:
-    int64_t value_;
+    internal_type_t value_;
 };
 
 class Real final : public Literal, public std::enable_shared_from_this<Real>
 {
 public:
+    using internal_type_t = double;
+
     explicit Real(double value)
         : value_(value)
     {
     }
 
-    double getValue() const
+    internal_type_t getValue() const
     {
         return value_;
     }
@@ -122,18 +126,20 @@ public:
     }
 
 private:
-    double value_;
+    internal_type_t value_;
 };
 
 class Boolean final : public Literal, public std::enable_shared_from_this<Boolean>
 {
 public:
+    using internal_type_t = bool;
+
     explicit Boolean(bool value)
         : value_(value)
     {
     }
 
-    bool getValue() const
+    internal_type_t getValue() const
     {
         return value_;
     }
@@ -144,7 +150,7 @@ public:
     }
 
 private:
-    bool value_;
+    internal_type_t value_;
 };
 
 class Null final : public Literal, public std::enable_shared_from_this<Null>
