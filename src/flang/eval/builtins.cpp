@@ -17,6 +17,15 @@ void print_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
     }
 }
 
+void assert_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    auto val = visitor->requireBoolean(visitor->evalElement(args[0]));
+    if (!val->getValue()) {
+        visitor->throwRuntimeError("Assertion error!");
+    }
+}
+
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
 {
     std::vector<std::shared_ptr<Builtin>> result;
@@ -38,6 +47,7 @@ void BuiltinsRegistry::callBuiltin(std::shared_ptr<Builtin> builtin, std::vector
 void BuiltinsRegistry::registerAllBuiltins()
 {
     registry_.insert_or_assign("print", print_impl);
+    registry_.insert_or_assign("assert", assert_impl);
 }
 
 } // namespace flang
