@@ -118,6 +118,15 @@ void tail_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     }
 }
 
+template <class T>
+void is_type_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+
+    auto evaluated_arg = visitor->evalElement(args[0]);
+    visitor->setResult(std::make_shared<Boolean>(std::dynamic_pointer_cast<T>(evaluated_arg) != nullptr));
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -155,6 +164,13 @@ void BuiltinsRegistry::registerAllBuiltins()
 
     registry_.insert_or_assign("head", head_impl);
     registry_.insert_or_assign("tail", tail_impl);
+
+    registry_.insert_or_assign("isint", is_type_impl<Integer>);
+    registry_.insert_or_assign("isreal", is_type_impl<Real>);
+    registry_.insert_or_assign("isbool", is_type_impl<Boolean>);
+    registry_.insert_or_assign("isnull", is_type_impl<Null>);
+    registry_.insert_or_assign("isatom", is_type_impl<Identifier>);
+    registry_.insert_or_assign("islist", is_type_impl<List>);
 }
 
 } // namespace flang

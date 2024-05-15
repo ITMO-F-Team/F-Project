@@ -10,7 +10,7 @@ void AstPrinter::visitElement(std::shared_ptr<Element> node)
 
 void AstPrinter::visitBoolean(std::shared_ptr<Boolean> node)
 {
-    os_ << node->getValue();
+    os_ << (node->getValue() ? "true" : "false");
 }
 
 void AstPrinter::visitIdentifier(std::shared_ptr<Identifier> node)
@@ -36,7 +36,7 @@ void AstPrinter::visitNull(std::shared_ptr<Null> node)
 void AstPrinter::visitList(std::shared_ptr<List> node)
 {
     os_ << "(";
-    for (auto it = node->getElements().begin(); it != node->getElements().end(); ++it){
+    for (auto it = node->getElements().begin(); it != node->getElements().end(); ++it) {
         visitElement(*it);
         if (it + 1 != node->getElements().end()) {
             os_ << ' ';
