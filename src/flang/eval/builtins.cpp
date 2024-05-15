@@ -12,7 +12,8 @@ namespace flang
 void print_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
     for (auto& arg : args) {
-        std::cout << printElement(visitor->evalElement(arg));
+        auto x = visitor->evalElement(arg);
+        std::cout << printElement(x);
     }
 }
 

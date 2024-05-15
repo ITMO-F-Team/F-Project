@@ -26,8 +26,6 @@ int main(int argc, char* argv[])
     }
     std::string source_file_name = argv[1];
     std::string source           = readSource(source_file_name);
-
-    std::cout << "Source program:\n" << source << '\n';
     try {
         auto tokens = flang::Tokenizer().tokenize(source);
         auto prog   = flang::parse(tokens);

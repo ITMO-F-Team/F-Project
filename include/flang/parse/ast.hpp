@@ -47,7 +47,7 @@ private:
     // TODO: Location
 };
 
-class Identifier : public Element, std::enable_shared_from_this<Identifier>
+class Identifier : public Element, public std::enable_shared_from_this<Identifier>
 {
 public:
     static Identifier LambdaIdentifier()
@@ -81,7 +81,7 @@ public:
     virtual ~Literal() = default;
 };
 
-class Integer final : public Literal, std::enable_shared_from_this<Integer>
+class Integer final : public Literal, public std::enable_shared_from_this<Integer>
 {
 public:
     explicit Integer(int64_t value)
@@ -103,7 +103,7 @@ private:
     int64_t value_;
 };
 
-class Real final : public Literal, std::enable_shared_from_this<Real>
+class Real final : public Literal, public std::enable_shared_from_this<Real>
 {
 public:
     explicit Real(double value)
@@ -125,7 +125,7 @@ private:
     double value_;
 };
 
-class Boolean final : public Literal, std::enable_shared_from_this<Boolean>
+class Boolean final : public Literal, public std::enable_shared_from_this<Boolean>
 {
 public:
     explicit Boolean(bool value)
@@ -147,7 +147,7 @@ private:
     bool value_;
 };
 
-class Null final : public Literal, std::enable_shared_from_this<Null>
+class Null final : public Literal, public std::enable_shared_from_this<Null>
 {
     void accept(Visitor& visitor) override
     {
@@ -155,7 +155,7 @@ class Null final : public Literal, std::enable_shared_from_this<Null>
     }
 };
 
-class List final : public Element, std::enable_shared_from_this<List>
+class List final : public Element, public std::enable_shared_from_this<List>
 {
 public:
     explicit List(std::vector<std::shared_ptr<Element>> elements)
@@ -177,7 +177,7 @@ private:
     std::vector<std::shared_ptr<Element>> elements_;
 };
 
-class UserFunction final : public Element, std::enable_shared_from_this<UserFunction>
+class UserFunction final : public Element, public std::enable_shared_from_this<UserFunction>
 {
 public:
     UserFunction(std::string name, std::vector<std::string> formal_args, std::shared_ptr<Element> body)
@@ -213,7 +213,7 @@ private:
     std::shared_ptr<Element> body_;
 };
 
-class Builtin final : public Element, std::enable_shared_from_this<Builtin>
+class Builtin final : public Element, public std::enable_shared_from_this<Builtin>
 {
 public:
     explicit Builtin(std::string name)

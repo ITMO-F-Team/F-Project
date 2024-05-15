@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <flang/pp/ast_printer.hpp>
 #include <iterator>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -51,13 +53,18 @@ void EvalVisitor::visitList(std::shared_ptr<List> node)
         setResult(std::make_shared<Null>());
         return;
     }
-    // 1. Eval callee
-    // auto callee = requireFunction(evalElement(elements[0]));
-    // 2. Collect args
+    // 1. Collect args
     std::vector<std::shared_ptr<Element>> args;
     std::copy(elements.begin() + 1, elements.end(), std::back_inserter(args));
-    // 3. Invoke
-    // callee->call(*this, std::move(args));
+    // 2. Eval callee
+    auto callee = evalElement(elements[0]);
+    if (auto fn = std::dynamic_pointer_cast<UserFunction>(callee)) {
+        throw std::runtime_error("not implemented");
+    } else if (auto b = std::dynamic_pointer_cast<Builtin>(callee)) {
+        builtin_registry_->callBuiltin(b, args);
+    } else {
+        throwRuntimeError(printElement(callee) + " is not a function");
+    }
 }
 
 void EvalVisitor::visitUserFunction(std::shared_ptr<UserFunction> node)
@@ -77,7 +84,11 @@ void EvalVisitor::setResult(std::shared_ptr<Element> element)
 
 std::shared_ptr<Element> EvalVisitor::loadVariable(std::string const& name)
 {
-    return env_.loadVariable(name);
+    auto result = env_.loadVariable(name);
+    if (result == nullptr) {
+        throwRuntimeError("variable not found " + name);
+    }
+    return result;
 }
 
 void EvalVisitor::storeVariable(std::string const& name, std::shared_ptr<Element> element)

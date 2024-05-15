@@ -15,7 +15,7 @@ class EvalVisitor : public Visitor
 {
 public:
     EvalVisitor()
-        : builtin_registry_(std::make_shared<BuiltinsRegistry>())
+        : builtin_registry_(std::make_shared<BuiltinsRegistry>(this))
     {
         setAllBuiltins();
     }
