@@ -9,6 +9,8 @@
 
 namespace flang
 {
+class BuiltinsRegistry;
+
 class EvalVisitor : public Visitor
 {
 public:
@@ -43,7 +45,7 @@ public:
 private:
     EnvironmentStack env_;
     std::shared_ptr<Element> result_;
-    BuiltinsRegistry builtin_registry_;
+    std::shared_ptr<BuiltinsRegistry> builtin_registry_;
 
     void setAllBuiltins();
 };
