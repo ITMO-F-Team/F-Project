@@ -216,9 +216,8 @@ private:
 class Builtin final : public Element, std::enable_shared_from_this<Builtin>
 {
 public:
-    explicit Builtin(std::string name, int arity)
+    explicit Builtin(std::string name)
         : name_(name)
-        , arity_(arity)
     {
     }
 
@@ -234,7 +233,6 @@ public:
 
 private:
     std::string name_;
-    int arity_;
 };
 
 
