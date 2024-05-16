@@ -1,0 +1,4 @@
+(prog () (
+    (setq i 10)
+    (assert (equal i 10)))
+)

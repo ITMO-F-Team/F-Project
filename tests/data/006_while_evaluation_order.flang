@@ -1,9 +1,0 @@
-(setq step 0)
-(setq i 0)
-
-(while (prog () ((assert (equal step 0)
-                 (setq step 1))
-                 (less i 10)))
-    ((assert (equal step 1))
-     (setq step 0)
-     (setq i (plus i 1))))

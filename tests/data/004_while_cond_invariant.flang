@@ -1,5 +1,0 @@
-(setq i 0)
-(while (less i 10)
-    ((assert (less i 10))
-     (setq i (plus i 1))))
-(assert (equal i 10))

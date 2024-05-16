@@ -1,28 +1,15 @@
-(func length (list)
+(func reverseTailRec (list acc)
   (cond (isnull list)
-    0
-    (plus 1 (length (tail list)))
-  )
-)
-
-(func append (list element)
-  (cond (isnull list)
-    '(element)
-    (cons (head list) (append (tail head) element))
+    acc
+    (reverseTailRec (tail list) (cons (head list) acc))
   )
 )
 
 (func reverse (list)
-  (cond (lesseq (length list) 0)
-    '()
-    (cond (equals (length list) 1)
-      '(head list)
-      (append (reverse (tail list)) (head list))
-    )
-  )
+  (reverseTailRec list '())
 )
 
-(func comapreLists (firstList secondList)
+(func compareLists (firstList secondList)
   (cond (and (isnull firstList) (isnull secondList))
     true
     (cond (or (isnull firstList) (isnull secondList))
