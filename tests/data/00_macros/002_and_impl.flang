@@ -1,0 +1,11 @@
+(macro and (x y)
+    (cond (not (eval x))
+        false
+        (eval y))
+)
+
+(assert (and true true))
+(assert (not (and false true)))
+(assert (not (and true false)))
+(and false (assert false))
+

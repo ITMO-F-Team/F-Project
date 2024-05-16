@@ -1,0 +1,35 @@
+(macro or (x y)
+    (cond (eval x)
+        true
+        (eval y))
+)
+
+(func seq (x y) y)
+
+(func proggAux (list)
+    (cond
+        (or
+            (isnull list)
+            (isnull (head list))
+        )
+        null
+        (seq
+            (eval (head list))
+            (proggAux (tail list))
+        )
+    )
+)
+
+(macro progg (list)
+    (proggAux list)
+)
+
+(setq i 0)
+
+(progg (
+    (setq i (plus i 1))
+    (setq i (plus i 1))
+    (setq i (plus i 1))
+))
+
+(assert (equal i 3))

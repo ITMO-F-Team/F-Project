@@ -53,6 +53,8 @@ void cond_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     }
 }
 
+
+template <bool isMacro>
 void func_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
     visitor->requireArgsNumber(args, 3);
@@ -66,7 +68,7 @@ void func_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
         return id->getName();
     });
 
-    auto fn = std::make_shared<UserFunction>(id->getName(), formal_args, body);
+    auto fn = std::make_shared<UserFunction>(id->getName(), formal_args, body, isMacro);
     visitor->storeVariable(id->getName(), fn);
 }
 
@@ -280,7 +282,9 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("assert", assert_impl);
     registry_.insert_or_assign("setq", setq_impl);
     registry_.insert_or_assign("cond", cond_impl);
-    registry_.insert_or_assign("func", func_impl);
+    registry_.insert_or_assign("func", func_impl<false>);
+    registry_.insert_or_assign("macro", func_impl<true>);
+
     registry_.insert_or_assign("lambda", lambda_impl);
     registry_.insert_or_assign("prog", prog_impl);
     registry_.insert_or_assign("eval", eval_impl);

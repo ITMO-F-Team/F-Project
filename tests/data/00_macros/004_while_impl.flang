@@ -1,0 +1,20 @@
+(func seq (x y) y)
+
+(func whileimpl (condition body)
+    (cond (eval condition)
+        (seq
+            (eval body)
+            (whileimpl condition body)
+        )
+        null
+    )
+)
+
+(macro whilee (condition body)
+    (whileimpl condition body)
+)
+
+(setq i 0)
+(whilee (less i 10) (setq i (plus i 1)))
+
+(assert (equal i 10))
