@@ -128,6 +128,9 @@ std::shared_ptr<Element> EvalVisitor::loadVariable(std::string const& name)
 
 void EvalVisitor::storeVariable(std::string const& name, std::shared_ptr<Element> element)
 {
+    if (isReservedKeyword(name)) {
+        throwRuntimeError(name + " is a reserved keyword, its value cannot be reassigned");
+    }
     return env_.storeVariable(name, std::move(element));
 }
 
@@ -197,7 +200,7 @@ void EvalVisitor::requireArgsNumber(std::vector<std::shared_ptr<Element>> args, 
 void EvalVisitor::setAllBuiltins()
 {
     for (auto builtin : builtin_registry_->getAllBuiltins()) {
-        storeVariable(builtin->getName(), builtin);
+        env_.storeVariable(builtin->getName(), builtin);
     }
 }
 

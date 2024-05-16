@@ -10,4 +10,9 @@ void Visitor::visitProgram(Program program)
     }
 }
 
+bool isReservedKeyword(std::string s)
+{
+    return s == "quote" || s == "setq" || s == "func" || s == "lambda" || s == "prog" || s == "cond" || s == "while" || s == "return" || s == "break";
+}
+
 } // namespace flang

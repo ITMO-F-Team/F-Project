@@ -236,5 +236,6 @@ private:
     std::string name_;
 };
 
+bool isReservedKeyword(std::string s);
 
 } // namespace flang
