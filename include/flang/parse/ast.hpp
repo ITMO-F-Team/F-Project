@@ -181,10 +181,11 @@ private:
 class UserFunction final : public Element, public std::enable_shared_from_this<UserFunction>
 {
 public:
-    UserFunction(std::string name, std::vector<std::string> formal_args, std::shared_ptr<Element> body)
+    UserFunction(std::string name, std::vector<std::string> formal_args, std::shared_ptr<Element> body, bool is_macro = false)
         : name_(name)
         , formal_args_(formal_args)
         , body_(body)
+        , is_macro_(is_macro)
     {
     }
 
@@ -203,6 +204,11 @@ public:
         return body_;
     }
 
+    bool isMacro() const
+    {
+        return is_macro_;
+    }
+
     void accept(Visitor& visitor) override
     {
         visitor.visitUserFunction(shared_from_this());
@@ -212,6 +218,7 @@ private:
     std::string name_;
     std::vector<std::string> formal_args_;
     std::shared_ptr<Element> body_;
+    bool is_macro_;
 };
 
 class Builtin final : public Element, public std::enable_shared_from_this<Builtin>

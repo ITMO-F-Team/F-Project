@@ -1,0 +1,2 @@
+(macro f (x) ())
+(f (assert false))

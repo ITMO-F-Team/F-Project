@@ -77,9 +77,13 @@ void EvalVisitor::callUserFunc(std::shared_ptr<UserFunction> fn, std::vector<std
     if (expected_n_args != actual_n_args) {
         throwRuntimeError("Function " + fn->getName() + " expects " + std::to_string(expected_n_args) + " but got " + std::to_string(actual_n_args));
     }
-    // 2. Eval args
+    // 2. Eval args if needed
     std::vector<std::shared_ptr<Element>> arg_values;
-    std::transform(args.begin(), args.end(), std::back_inserter(arg_values), [this](auto&& x) { return evalElement(x); });
+    if (!fn->isMacro()) {
+        std::transform(args.begin(), args.end(), std::back_inserter(arg_values), [this](auto&& x) { return evalElement(x); });
+    } else {
+        std::copy(args.begin(), args.end(), std::back_inserter(arg_values));
+    }
     // 3. Create callframe
     ScopedEnvironment env(env_);
     // 3. Assign arg values to arg names
