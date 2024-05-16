@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 
 namespace flang
 {
@@ -191,6 +193,24 @@ void binop_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
     visitor->setResult(std::make_shared<ReturnType>(result_value));
 }
 
+void equal_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+
+    auto lhs = visitor->evalElement(args[0]);
+    auto rhs = visitor->evalElement(args[1]);
+
+    bool result_value = false;
+
+    if (auto lhsBoolean = std::dynamic_pointer_cast<Boolean>(lhs); lhsBoolean && std::dynamic_pointer_cast<Boolean>(rhs)) {
+        result_value = lhsBoolean->getValue() == std::dynamic_pointer_cast<Boolean>(rhs)->getValue();
+    } else if (auto lhsInteger = std::dynamic_pointer_cast<Integer>(lhs); lhsInteger && std::dynamic_pointer_cast<Integer>(rhs)) {
+        result_value = lhsInteger->getValue() == std::dynamic_pointer_cast<Integer>(rhs)->getValue();
+    }
+
+    visitor->setResult(std::make_shared<Boolean>(result_value));
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -251,8 +271,10 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("or", binop_impl<Boolean, Boolean, std::logical_or>);
     registry_.insert_or_assign("xor", binop_impl<Boolean, Boolean, std::bit_xor>);
 
+    registry_.insert_or_assign("equal", equal_impl);
+
     // TODO:
-    // equal, nonequal, not
+    // nonequal, not
     // lambda prog break
     // eval
 }
