@@ -1,6 +1,6 @@
 (assert
-    (
-        (lambda (x) ((return x))) 42
+    (equal
+        ((lambda (x) ((return x))) 42)
+        42
     )
-    42
 )
