@@ -213,6 +213,13 @@ void equal_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
     visitor->setResult(std::make_shared<Boolean>(result_value));
 }
 
+void not_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    auto argument = visitor->requireBoolean(visitor->evalElement(args[0]));
+    visitor->setResult(std::make_shared<Boolean>(!argument->getValue()));
+}
+
 // ====== Builtins Registry =====
 
 std::vector<std::shared_ptr<Builtin>> BuiltinsRegistry::getAllBuiltins()
@@ -274,9 +281,10 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("xor", binop_impl<Boolean, Boolean, std::bit_xor>);
 
     registry_.insert_or_assign("equal", equal_impl);
+    registry_.insert_or_assign("not", not_impl);
 
     // TODO:
-    // nonequal, not
+    // nonequal
     // lambda prog break
     // eval
 }
