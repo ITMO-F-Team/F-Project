@@ -5,6 +5,30 @@
 
 namespace flang
 {
+
+
+// ----- Control Flow Exceptions -----
+
+class flang_return : public std::runtime_error
+{
+public:
+    explicit flang_return()
+        : std::runtime_error("")
+    {
+    }
+};
+
+class flang_break : public std::runtime_error
+{
+public:
+    explicit flang_break()
+        : std::runtime_error("")
+    {
+    }
+};
+
+// ----- Exceptions that indicate error -----
+
 class flang_exception : public std::runtime_error
 {
 public:

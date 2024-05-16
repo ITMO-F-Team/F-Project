@@ -1,5 +1,6 @@
 #include "flang/eval/builtins.hpp"
 #include <algorithm>
+#include <flang/flang_exception.hpp>
 #include <flang/parse/ast.hpp>
 #include <flang/pp/ast_printer.hpp>
 #include <functional>
@@ -72,6 +73,7 @@ void return_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> arg
 {
     visitor->requireArgsNumber(args, 1);
     visitor->setResult(visitor->evalElement(args[0]));
+    throw flang_return();
 }
 
 void while_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
