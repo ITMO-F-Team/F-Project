@@ -21,6 +21,6 @@ jobs:
           cmake -B ${{ github.workspace }}/build
           cmake --build ${{ github.workspace }}/build --config Debug
 
-      - name: Run GTest
-        run: ctest -C ${{env.BUILD_TYPE}}
-        working-directory: ${{ github.workspace }}/build//tests
+      - name: Run tests
+        run: |
+          sh ${{ github.workspace }}/tests/run_test.sh
