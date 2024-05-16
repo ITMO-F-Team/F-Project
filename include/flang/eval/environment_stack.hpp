@@ -39,7 +39,7 @@ private:
 class ScopedEnvironment
 {
 public:
-    ScopedEnvironment(EnvironmentStack environment_stack)
+    ScopedEnvironment(EnvironmentStack& environment_stack)
         : environment_stack_(environment_stack)
     {
         environment_stack_.pushEnvironment();
@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    EnvironmentStack environment_stack_;
+    EnvironmentStack& environment_stack_;
 };
 
 } // namespace flang
