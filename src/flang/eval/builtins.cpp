@@ -191,6 +191,7 @@ void binop_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
     visitor->setResult(std::make_shared<ReturnType>(result_value));
 }
 
+template <class EqualityOp>
 void equal_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
     visitor->requireArgsNumber(args, 2);
@@ -202,11 +203,11 @@ void equal_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
 
     if (auto lhsBoolean = std::dynamic_pointer_cast<Boolean>(lhs)) {
         if (auto rhsBoolean = std::dynamic_pointer_cast<Boolean>(rhs)) {
-            result_value = lhsBoolean->getValue() == rhsBoolean->getValue();
+            result_value = EqualityOp()(lhsBoolean->getValue(), rhsBoolean->getValue());
         }
     } else if (auto lhsInteger = std::dynamic_pointer_cast<Integer>(lhs)) {
         if (auto rhsInteger = std::dynamic_pointer_cast<Integer>(rhs)) {
-            result_value = lhsInteger->getValue() == rhsInteger->getValue();
+            result_value = EqualityOp()(lhsInteger->getValue(), rhsInteger->getValue());
         }
     }
 
@@ -280,11 +281,11 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("or", binop_impl<Boolean, Boolean, std::logical_or>);
     registry_.insert_or_assign("xor", binop_impl<Boolean, Boolean, std::bit_xor>);
 
-    registry_.insert_or_assign("equal", equal_impl);
+    registry_.insert_or_assign("equal", equal_impl<std::equal_to<>>);
+    registry_.insert_or_assign("nonequal", equal_impl<std::not_equal_to<>>);
     registry_.insert_or_assign("not", not_impl);
 
     // TODO:
-    // nonequal
     // lambda prog break
     // eval
 }
