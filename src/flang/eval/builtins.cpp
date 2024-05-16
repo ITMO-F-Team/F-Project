@@ -319,8 +319,7 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("not", not_impl);
 
     // TODO:
-    // lambda prog break
-    // eval
+    // prog
 }
 
 } // namespace flang
