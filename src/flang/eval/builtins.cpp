@@ -76,13 +76,24 @@ void return_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> arg
     throw flang_return();
 }
 
+void break_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 0);
+    throw flang_break();
+}
+
 void while_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
     visitor->requireArgsNumber(args, 2);
     auto cond = args[0];
     while (visitor->requireBoolean(visitor->evalElement(cond))->getValue()) {
-        visitor->evalElement(args[1]);
+        try {
+            visitor->evalElement(args[1]);
+        } catch (flang_break const& e) {
+            break;
+        }
     }
+    visitor->setNullResult();
 }
 
 void quote_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
@@ -192,6 +203,7 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("cond", cond_impl);
     registry_.insert_or_assign("func", func_impl);
     registry_.insert_or_assign("return", return_impl);
+    registry_.insert_or_assign("break", break_impl);
     registry_.insert_or_assign("while", while_impl);
     registry_.insert_or_assign("quote", quote_impl);
 
