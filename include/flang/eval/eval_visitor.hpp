@@ -32,6 +32,7 @@ public:
 
     // --- Evaluation State ---
     void setResult(std::shared_ptr<Element> element);
+    void setNullResult();
     std::shared_ptr<Element> loadVariable(std::string const& name);
     void storeVariable(std::string const& name, std::shared_ptr<Element> element);
     void throwRuntimeError(std::string const& message);
