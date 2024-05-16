@@ -50,11 +50,6 @@ private:
 class Identifier : public Element, public std::enable_shared_from_this<Identifier>
 {
 public:
-    static Identifier LambdaIdentifier()
-    {
-        return Identifier("LAMBDA");
-    }
-
     explicit Identifier(std::string name)
         : name_(std::move(name))
     {
