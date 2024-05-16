@@ -170,7 +170,16 @@ void is_type_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> ar
     visitor->requireArgsNumber(args, 1);
 
     auto evaluated_arg = visitor->evalElement(args[0]);
-    visitor->setResult(std::make_shared<Boolean>(std::dynamic_pointer_cast<T>(evaluated_arg) != nullptr));
+
+    bool result_value = false;
+
+    if (auto evaludated_arg_list = std::dynamic_pointer_cast<List>(evaluated_arg)) {
+        result_value = evaludated_arg_list->getElements().empty();
+    } else if (auto evaludated_arg_type = std::dynamic_pointer_cast<T>(evaluated_arg)) {
+        result_value = evaludated_arg_type != nullptr;
+    }
+
+    visitor->setResult(std::make_shared<Boolean>(result_value));
 }
 
 template <class ReturnType, class RequiredType, template <typename T = RequiredType::internal_type_t> class BinOp>
