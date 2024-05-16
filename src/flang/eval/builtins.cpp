@@ -197,7 +197,7 @@ void prog_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     // 1. Check and collect args
     visitor->requireArgsNumber(args, 2);
     auto context_list = visitor->requireList(args[0])->getElements();
-    auto body         = args[1];
+    auto body         = visitor->requireList(args[1])->getElements();
     std::vector<std::string> context_ids;
     std::transform(context_list.begin(), context_list.end(), std::back_inserter(context_ids), [visitor](auto&& x) {
         auto id = visitor->requireIdentifier(x);
@@ -210,7 +210,9 @@ void prog_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
         visitor->storeVariable(id, std::make_shared<Null>());
     }
     // 4. Eval body
-    visitor->evalElement(body);
+    for (auto item : body) {
+        visitor->evalElement(item);
+    }
 }
 
 void eval_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
