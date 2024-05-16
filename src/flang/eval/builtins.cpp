@@ -317,9 +317,6 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("equal", equal_impl<std::equal_to<>>);
     registry_.insert_or_assign("nonequal", equal_impl<std::not_equal_to<>>);
     registry_.insert_or_assign("not", not_impl);
-
-    // TODO:
-    // prog
 }
 
 } // namespace flang
