@@ -1,5 +1,6 @@
 #include "flang/eval/builtins.hpp"
 #include <algorithm>
+#include <flang/eval/environment_stack.hpp>
 #include <flang/flang_exception.hpp>
 #include <flang/parse/ast.hpp>
 #include <flang/pp/ast_printer.hpp>
@@ -191,6 +192,36 @@ void binop_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
     visitor->setResult(std::make_shared<ReturnType>(result_value));
 }
 
+void prog_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    // 1. Check and collect args
+    visitor->requireArgsNumber(args, 2);
+    auto context_list = visitor->requireList(args[0])->getElements();
+    auto body         = args[1];
+    std::vector<std::string> context_ids;
+    std::transform(context_list.begin(), context_list.end(), std::back_inserter(context_ids), [visitor](auto&& x) {
+        auto id = visitor->requireIdentifier(x);
+        return id->getName();
+    });
+    // 2. Create environment
+    auto env = visitor->createScopedEnvironment();
+    // 3. Add context variables
+    for (auto&& id : context_ids) {
+        visitor->storeVariable(id, std::make_shared<Null>());
+    }
+    // 4. Eval body
+    visitor->evalElement(body);
+}
+
+void eval_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 1);
+    // 1. Eval passed argument (as a regular function call)
+    auto first_result = visitor->evalElement(args[0]);
+    // 2. Eval as requested
+    visitor->evalElement(first_result);
+}
+
 template <class EqualityOp>
 void equal_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
@@ -249,6 +280,8 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("cond", cond_impl);
     registry_.insert_or_assign("func", func_impl);
     registry_.insert_or_assign("lambda", lambda_impl);
+    registry_.insert_or_assign("prog", prog_impl);
+    registry_.insert_or_assign("eval", eval_impl);
 
     registry_.insert_or_assign("return", return_impl);
     registry_.insert_or_assign("break", break_impl);
