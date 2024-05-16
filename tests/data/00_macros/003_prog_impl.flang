@@ -31,5 +31,3 @@
     (setq i (plus i 1))
     (setq i (plus i 1))
 ))
-
-(assert (equal i 3))

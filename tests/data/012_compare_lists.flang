@@ -1,4 +1,4 @@
-(func comapreLists (firstList secondList)
+(func compareLists (firstList secondList)
   (cond (and (isnull firstList) (isnull secondList))
     true
     (cond (or (isnull firstList) (isnull secondList))

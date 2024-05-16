@@ -1,0 +1,27 @@
+(func map (function list)
+    (cond (isnull list)
+        '()
+        (cons (function (head list)) (map function (tail list)))
+    )
+)
+
+
+(func compareLists (firstList secondList)
+  (cond (and (isnull firstList) (isnull secondList))
+    true
+    (cond (or (isnull firstList) (isnull secondList))
+      false
+      (cond (nonequal (head firstList) (head secondList))
+        false
+        (compareLists (tail firstList) (tail secondList))
+      )
+    )
+  )
+)
+
+(setq timesTwo (lambda (x) ((return (times x 2)))))
+
+(assert (equal (compareLists '() (map timesTwo '())) true))
+(assert (equal (compareLists '(2) (map timesTwo '(1))) true))
+(assert (equal (compareLists '(2 4 6 8 10) (map timesTwo '(1 2 3 4 5))) true))
+

@@ -1,18 +1,19 @@
+(setq intMin -2147483648)
+
 (func maxElement (lst)
-  (cond (or (not (islist lst)) (isnull lst))
-    null
-    (
+  (cond (isnull lst)
+    intMin
+    (prog () (
       (setq maxRest (maxElement (tail lst)))
-      (cond (or (isnull maxRest) (greatereq (head lst) maxRest))
+      (cond (and (not (isnull maxRest)) (greatereq (head lst) maxRest))
         (head lst)
         maxRest
       )
-    )
+    ))
   )
 )
 
-
-(assert (equal (maxElement '()) null))
+(assert (equal (maxElement '()) intMin))
 (assert (equal (maxElement '(1)) 1))
 (assert (equal (maxElement '(1 2 3 4 5)) 5))
 (assert (equal (maxElement '(1 2 5 3 4)) 5))

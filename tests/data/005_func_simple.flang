@@ -1,5 +1,5 @@
 (func id (x) (
-    (return (x))
+    (return x)
 ))
 
 (assert (equal (id 42) 42))

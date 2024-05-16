@@ -1,0 +1,40 @@
+(func concat (firstList secondList)
+  (cond (isnull firstList)
+    secondList
+    (cond (isnull secondList)
+      firstList
+      (cons (head firstList) (concat (tail firstList) secondList))
+    )
+  )
+)
+
+(func compareLists (firstList secondList)
+  (cond (and (isnull firstList) (isnull secondList))
+    true
+    (cond (or (isnull firstList) (isnull secondList))
+      false
+      (cond (nonequal (head firstList) (head secondList))
+        false
+        (compareLists (tail firstList) (tail secondList))
+      )
+    )
+  )
+)
+
+(func compareLists (firstList secondList)
+  (cond (and (isnull firstList) (isnull secondList))
+    true
+    (cond (or (isnull firstList) (isnull secondList))
+      false
+      (cond (nonequal (head firstList) (head secondList))
+        false
+        (compareLists (tail firstList) (tail secondList))
+      )
+    )
+  )
+)
+
+
+(assert (equal (compareLists '(1 2 3 4) (concat '(1 2 3) '(4))) true))
+(assert (equal (compareLists '(1) (concat '() '(1))) true))
+(assert (equal (compareLists (concat '(1) '(2)) (concat '(1) '(2))) true))
