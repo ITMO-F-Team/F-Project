@@ -69,6 +69,22 @@ void func_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
     visitor->storeVariable(id->getName(), fn);
 }
 
+void lambda_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
+{
+    visitor->requireArgsNumber(args, 2);
+    auto args_list = visitor->requireList(args[0])->getElements();
+    auto body      = args[1];
+
+    std::vector<std::string> formal_args;
+    std::transform(args_list.begin(), args_list.end(), std::back_inserter(formal_args), [visitor](auto&& x) {
+        auto id = visitor->requireIdentifier(x);
+        return id->getName();
+    });
+
+    auto fn = std::make_shared<UserFunction>("anonymous lambda", formal_args, body);
+    visitor->setResult(fn);
+}
+
 void return_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args)
 {
     visitor->requireArgsNumber(args, 1);
@@ -202,6 +218,8 @@ void BuiltinsRegistry::registerAllBuiltins()
     registry_.insert_or_assign("setq", setq_impl);
     registry_.insert_or_assign("cond", cond_impl);
     registry_.insert_or_assign("func", func_impl);
+    registry_.insert_or_assign("lambda", lambda_impl);
+
     registry_.insert_or_assign("return", return_impl);
     registry_.insert_or_assign("break", break_impl);
     registry_.insert_or_assign("while", while_impl);
