@@ -200,10 +200,14 @@ void equal_impl(EvalVisitor* visitor, std::vector<std::shared_ptr<Element>> args
 
     bool result_value = false;
 
-    if (auto lhsBoolean = std::dynamic_pointer_cast<Boolean>(lhs); lhsBoolean && std::dynamic_pointer_cast<Boolean>(rhs)) {
-        result_value = lhsBoolean->getValue() == std::dynamic_pointer_cast<Boolean>(rhs)->getValue();
-    } else if (auto lhsInteger = std::dynamic_pointer_cast<Integer>(lhs); lhsInteger && std::dynamic_pointer_cast<Integer>(rhs)) {
-        result_value = lhsInteger->getValue() == std::dynamic_pointer_cast<Integer>(rhs)->getValue();
+    if (auto lhsBoolean = std::dynamic_pointer_cast<Boolean>(lhs)) {
+        if (auto rhsBoolean = std::dynamic_pointer_cast<Boolean>(rhs)) {
+            result_value = lhsBoolean->getValue() == rhsBoolean->getValue();
+        }
+    } else if (auto lhsInteger = std::dynamic_pointer_cast<Integer>(lhs)) {
+        if (auto rhsInteger = std::dynamic_pointer_cast<Integer>(rhs)) {
+            result_value = lhsInteger->getValue() == rhsInteger->getValue();
+        }
     }
 
     visitor->setResult(std::make_shared<Boolean>(result_value));
