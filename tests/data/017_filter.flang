@@ -1,0 +1,37 @@
+(func filter (predicate list)
+    (cond (isnull list)
+        '()
+        (cond (predicate (head list))
+            (cons (head list) (filter predicate (tail list)))
+            (filter predicate (tail list))
+        )
+    )
+)
+
+(func compareLists (firstList secondList)
+  (cond (and (isnull firstList) (isnull secondList))
+    true
+    (cond (or (isnull firstList) (isnull secondList))
+      false
+      (cond (nonequal (head firstList) (head secondList))
+        false
+        (compareLists (tail firstList) (tail secondList))
+      )
+    )
+  )
+)
+
+(func mod (dividend divisor)
+  (cond (less dividend divisor)
+    dividend
+    (mod (minus dividend divisor) divisor)
+  )
+)
+
+(setq even (lambda (x) ((return (equal (mod x 2) 0)))))
+
+(assert (equal (compareLists '() (filter even '())) true))
+(assert (equal (compareLists '(2) (filter even '(2))) true))
+(assert (equal (compareLists '() (filter even '(1))) true))
+(assert (equal (compareLists '(2 4) (filter even '(1 2 3 4 5))) true))
+
