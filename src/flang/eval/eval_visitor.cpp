@@ -117,6 +117,11 @@ void EvalVisitor::setNullResult()
     setResult(std::make_shared<Null>());
 }
 
+ScopedEnvironment EvalVisitor::createScopedEnvironment()
+{
+    return ScopedEnvironment(env_);
+}
+
 std::shared_ptr<Element> EvalVisitor::loadVariable(std::string const& name)
 {
     auto result = env_.loadVariable(name);
