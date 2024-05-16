@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <flang/eval/environment_stack.hpp>
+#include <flang/flang_exception.hpp>
 #include <flang/pp/ast_printer.hpp>
 #include <iterator>
 #include <memory>
@@ -85,8 +86,15 @@ void EvalVisitor::callUserFunc(std::shared_ptr<UserFunction> fn, std::vector<std
     for (int i = 0; i < expected_n_args; i++) {
         storeVariable(fn->getFormalArgs()[i], arg_values[i]);
     }
-    // 4. Execute function body
-    evalElement(fn->getBody());
+    // 4. Execute function body, capturing return
+    try {
+        evalElement(fn->getBody());
+    } catch (flang_return const& e) {
+        // Return calls setResult,
+        // so we dont have to do anything here
+    } catch (flang_break const& e) {
+        throwRuntimeError("Out-of-loop 'break' in function " + fn->getName());
+    }
 }
 
 void EvalVisitor::visitUserFunction(std::shared_ptr<UserFunction> node)
