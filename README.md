@@ -17,7 +17,7 @@ Team
 
 1.  [Arthur Salyu (@achains)](https://github.com/achains)
 2.  [Egor Porsev (@Furetur)](https://github.com/Furetur)
-3.  [Egor Bronnikov @(endygamedev)](https://github.com/endygamedev)
+3.  [Egor Bronnikov (@endygamedev)](https://github.com/endygamedev)
 
 Slides
 ------
