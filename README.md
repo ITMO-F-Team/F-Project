@@ -2,7 +2,7 @@ F-Lang Interpreter
 ==================
 
 This project is a simple interpreter for F-Lang Programming Language which
-familiar to Common Lisp for university Compilers couse.
+familiar to Common Lisp for university Compilers course.
 
 [F-Lang Programming Language Specification][F-Lang Specification]
 
